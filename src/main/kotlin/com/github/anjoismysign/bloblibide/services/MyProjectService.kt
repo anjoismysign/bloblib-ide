@@ -1,7 +1,7 @@
-package org.jetbrains.plugins.template.services
+package com.github.anjoismysign.bloblibide.services
 
 import com.intellij.openapi.project.Project
-import org.jetbrains.plugins.template.MyBundle
+import com.github.anjoismysign.bloblibide.MyBundle
 
 class MyProjectService(project: Project) {
 

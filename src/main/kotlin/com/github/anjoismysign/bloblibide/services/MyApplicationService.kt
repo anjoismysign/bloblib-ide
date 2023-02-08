@@ -1,6 +1,6 @@
-package org.jetbrains.plugins.template.services
+package com.github.anjoismysign.bloblibide.services
 
-import org.jetbrains.plugins.template.MyBundle
+import com.github.anjoismysign.bloblibide.MyBundle
 
 class MyApplicationService {
 
