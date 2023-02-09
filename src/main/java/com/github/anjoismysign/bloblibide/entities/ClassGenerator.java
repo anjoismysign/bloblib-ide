@@ -14,21 +14,24 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.codeStyle.CodeStyleManager;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class ClassBuilder {
+public class ClassGenerator {
     private final PsiDirectory selectedDirectory;
     private final String className;
     private final DataTyper dataTyper;
     private final ImportCollection importCollection;
     private Function<String, String> classDeclaration;
     private final DefaultAttributes defaultAttributes;
+    private final List<String> defaultFunctions;
 
-    public static Optional<ClassBuilder> fromAnActionInsideNewGroup(AnActionEvent event, boolean dynamicDataTyper){
+    public static Optional<ClassGenerator> fromAnActionInsideNewGroup(AnActionEvent event, boolean dynamicDataTyper) {
         Project project = event.getProject();
         if (project == null) {
             return Optional.empty();
@@ -54,10 +57,10 @@ public class ClassBuilder {
         input.talk(NamingConventions.toPascalCase(input.thanks()));
         String className = input.thanks();
         DataTyper dataTyper;
-        if (dynamicDataTyper){
+        if (dynamicDataTyper) {
             dataTyper = new DataTyper();
             AlgorithmLib.dynamicRun(() -> {
-                String dataType = PanelLib.requestString("Enter Attribute/s","Example 1: 'String name,lastName'\n" +
+                String dataType = PanelLib.requestString("Enter Attribute/s", "Example 1: 'String name,lastName'\n" +
                                 "Example 2: 'boolean isDeceased'\n" +
                                 "Example 3: 'HashMap<String,Integer> records' (notice to not leave a ' ' space between\n" +
                                 "the comma of the key and value of the HashMap)",
@@ -70,21 +73,22 @@ public class ClassBuilder {
                     "Example 4: 'String name,lastname;int age;double income,expenses'", "Invalid input. Recursion will be used until then.", project);
             dataTyper = DataTyper.fromRaw(raw);
         }
-        return Optional.of(new ClassBuilder(selectedDirectory, className, dataTyper));
+        return Optional.of(new ClassGenerator(selectedDirectory, className, dataTyper));
     }
 
-    public ClassBuilder(PsiDirectory selectedDirectory,
-                        String className,
-                        DataTyper dataTyper) {
+    public ClassGenerator(PsiDirectory selectedDirectory,
+                          String className,
+                          DataTyper dataTyper) {
         this.selectedDirectory = selectedDirectory;
         this.className = className;
         this.dataTyper = dataTyper;
         importCollection = new ImportCollection();
         classDeclaration = name -> "public class " + name + " {";
         defaultAttributes = new DefaultAttributes();
+        defaultFunctions = new ArrayList<>();
     }
 
-    private String content(){
+    private String content() {
         StringBuilder builder = new StringBuilder();
         Optional<String> hasPackageName = PsiDirectoryLib.getPackageName(selectedDirectory);
         String declarePackage = hasPackageName.map(s -> "package " + s + ";\n\n").orElse("");
@@ -100,18 +104,26 @@ public class ClassBuilder {
         defaultAttributes.forEach(attribute -> builder.append(attribute.getter()).append(attribute.setter()));
         dataTyper.listAttributes().forEach(attribute ->
                 builder.append(attribute.getter()).append(attribute.setter()));
+        defaultFunctions.forEach(string -> builder.append(string).append("\n"));
         builder.deleteCharAt(builder.length() - 1);
         builder.append("}");
         return builder.toString();
     }
 
-    public void create(){
-        ApplicationManager.getApplication().runWriteAction(() ->{
+    /**
+     * Will attempt to create the class file in the selected package (since currently
+     * it only allows to create a class inside a package).
+     * Will then navigate/open to the newly created/generated class.
+     * Will then reformat the class.
+     */
+    public void generate() {
+        ApplicationManager.getApplication().runWriteAction(() -> {
             try {
                 PsiFile psiFile = selectedDirectory.createFile(className + ".java");
                 psiFile.getContainingFile().getVirtualFile().setBinaryContent(content().getBytes(StandardCharsets.UTF_8));
                 selectedDirectory.getVirtualFile().refresh(false, true);
                 psiFile.navigate(true);
+                CodeStyleManager.getInstance(psiFile.getProject()).reformat(psiFile);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -125,17 +137,46 @@ public class ClassBuilder {
     /**
      * Sets the class declaration. Starts with "public" and ends with "{".
      * The default is "public class {name} {"
+     *
      * @param classDeclaration the class declaration
      */
     public void setClassDeclaration(Function<String, String> classDeclaration) {
         this.classDeclaration = classDeclaration;
     }
 
+    /**
+     * Gets the default attributes. The default attributes are the attributes that are
+     * automatically generated when the class is created.
+     *
+     * @return the default attributes
+     */
     public DefaultAttributes getDefaultAttributes() {
         return defaultAttributes;
     }
 
+    /**
+     * Gets the import collection. The import collection is the collection of
+     * imports that are automatically generated when the class is created.
+     * Whenever added a new import, the String should be the package name.
+     * It must not include the "import" keyword nor the semicolon.
+     * Example: "java.util.ArrayList"
+     *
+     * @return the import collection
+     */
     public ImportCollection getImportCollection() {
         return importCollection;
+    }
+
+    /**
+     * Gets the default functions. The default functions are the functions that are
+     * automatically generated when the class is created.
+     * Whenever added a new function, the String should include the visibility,
+     * return type, name, parameters and body.
+     * Example: "public void setName(String name) { this.name = name; }"
+     *
+     * @return the default functions
+     */
+    public List<String> getDefaultFunctions() {
+        return defaultFunctions;
     }
 }
