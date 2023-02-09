@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
@@ -30,6 +31,7 @@ public class ClassGenerator {
     private Function<String, String> classDeclaration;
     private final DefaultAttributes defaultAttributes;
     private final List<String> defaultFunctions;
+    private final List<ObjectAttribute> dependencyInjection;
 
     public static Optional<ClassGenerator> fromAnActionInsideNewGroup(AnActionEvent event, boolean dynamicDataTyper) {
         Project project = event.getProject();
@@ -86,6 +88,7 @@ public class ClassGenerator {
         classDeclaration = name -> "public class " + name + " {";
         defaultAttributes = new DefaultAttributes();
         defaultFunctions = new ArrayList<>();
+        dependencyInjection = new ArrayList<>();
     }
 
     private String content() {
@@ -93,18 +96,19 @@ public class ClassGenerator {
         Optional<String> hasPackageName = PsiDirectoryLib.getPackageName(selectedDirectory);
         String declarePackage = hasPackageName.map(s -> "package " + s + ";\n\n").orElse("");
         builder.append(declarePackage);
-        importCollection.importPackages();
-        builder.append(classDeclaration.apply(className)).append("\n\n");
-        defaultAttributes.encapsulate().forEach(builder::append);
-        dataTyper.encapsulate().forEach(builder::append);
+        builder.append(getImportCollection().importPackages());
+        builder.append(getClassDeclaration().apply(className)).append("\n\n");
+        getDefaultAttributes().encapsulate().forEach(builder::append);
+        getDataTyper().encapsulate().forEach(builder::append);
         builder.append("\n");
-        builder.append("public ").append(className).append("() {\n");
-        defaultAttributes.initialize().forEach(builder::append);
+        builder.append("public ").append(className).append("(").append(getDependencyInjection()).append(") {\n");
+        builder.append(injectDependency());
+        getDefaultAttributes().initialize().forEach(builder::append);
         builder.append("}\n\n");
-        defaultAttributes.forEach(attribute -> builder.append(attribute.getter()).append(attribute.setter()));
-        dataTyper.listAttributes().forEach(attribute ->
+        getDefaultAttributes().forEach(attribute -> builder.append(attribute.getter()).append(attribute.setter()));
+        getDataTyper().listAttributes().forEach(attribute ->
                 builder.append(attribute.getter()).append(attribute.setter()));
-        defaultFunctions.forEach(string -> builder.append(string).append("\n"));
+        getDefaultFunctions().forEach(string -> builder.append(string).append("\n"));
         builder.deleteCharAt(builder.length() - 1);
         builder.append("}");
         return builder.toString();
@@ -121,9 +125,11 @@ public class ClassGenerator {
             try {
                 PsiFile psiFile = selectedDirectory.createFile(className + ".java");
                 psiFile.getContainingFile().getVirtualFile().setBinaryContent(content().getBytes(StandardCharsets.UTF_8));
+                WriteCommandAction.runWriteCommandAction(psiFile.getProject(), () -> {
+                    CodeStyleManager.getInstance(psiFile.getProject()).reformat(psiFile);
+                });
                 selectedDirectory.getVirtualFile().refresh(false, true);
                 psiFile.navigate(true);
-                CodeStyleManager.getInstance(psiFile.getProject()).reformat(psiFile);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -178,5 +184,43 @@ public class ClassGenerator {
      */
     public List<String> getDefaultFunctions() {
         return defaultFunctions;
+    }
+
+    /**
+     * Retrieves the data typer.
+     *
+     * @return the data typer
+     */
+    public DataTyper getDataTyper() {
+        return dataTyper;
+    }
+
+    public void addDependencyInjection(String attributeName) {
+        for (ObjectAttribute attribute : getDataTyper().listAttributes()) {
+            if (attribute.getAttributeName().equals(attributeName)) {
+                dependencyInjection.add(attribute);
+                break;
+            }
+        }
+    }
+
+    private String getDependencyInjection() {
+        StringBuilder builder = new StringBuilder();
+        dependencyInjection.forEach(attribute ->
+                builder.append(attribute.getDataType()).append(" ").append(attribute.getAttributeName()).append(","));
+        if (builder.length() > 0) {
+            builder.deleteCharAt(builder.length() - 1);
+        }
+        return builder.toString();
+    }
+
+    private String injectDependency() {
+        StringBuilder builder = new StringBuilder();
+        dependencyInjection.forEach(attribute -> {
+            String attributeName = attribute.getAttributeName();
+            builder.append("this.").append(attributeName).append(" = ")
+                    .append(attributeName).append(";\n");
+        });
+        return builder.toString();
     }
 }

@@ -1,9 +1,10 @@
 package com.github.anjoismysign.bloblibide.entities;
 
+import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class DataTyper extends HashMap<String, List<String>> {
 
@@ -54,7 +55,15 @@ public class DataTyper extends HashMap<String, List<String>> {
                 add(dataType, name);
     }
 
+    /**
+     * Will add an attribute to the DataTyper.
+     *
+     * @param dataType The data type of the attribute
+     * @param name     The name of the attribute.
+     *                 Will be converted to camelCase.
+     */
     public void add(String dataType, String name) {
+        name = NamingConventions.toCamelCase(name);
         if (this.containsKey(dataType)) {
             this.get(dataType).add(name);
         } else {
@@ -64,7 +73,7 @@ public class DataTyper extends HashMap<String, List<String>> {
         }
     }
 
-    public List<ObjectAttribute> listAttributes(){
+    public List<ObjectAttribute> listAttributes() {
         List<ObjectAttribute> list = new ArrayList<>();
         keySet().forEach(dataType -> {
             List<String> names = get(dataType);
@@ -73,7 +82,7 @@ public class DataTyper extends HashMap<String, List<String>> {
         return list;
     }
 
-    public List<String> encapsulate(){
+    public List<String> encapsulate() {
         List<String> list = new ArrayList<>();
         keySet().forEach(dataType -> {
             List<String> names = get(dataType);
