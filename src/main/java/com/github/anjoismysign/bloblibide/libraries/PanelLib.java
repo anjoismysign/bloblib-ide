@@ -2,6 +2,7 @@ package com.github.anjoismysign.bloblibide.libraries;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import org.jetbrains.annotations.NotNull;
 
 public class PanelLib {
 
@@ -30,11 +31,12 @@ public class PanelLib {
      * @param title        InputDialog title.
      * @param message      Message shown through the input field.
      * @param errorMessage Message shown when the user doesn't provide a String.
-     * @param project    Project to be used.
+     * @param project      Project to be used.
      * @return the String
      */
+    @NotNull
     public static String requestString(String title, String message, String errorMessage, Project project) {
-        String input = Messages.showInputDialog(project, "Message", "Title", null);
+        String input = Messages.showInputDialog(project, message, title, null);
         if (input == null || input.length() == 0) {
             showMessage("ERROR", errorMessage, project);
             return requestString(title, message, errorMessage, project);

@@ -3,7 +3,7 @@ package com.github.anjoismysign.bloblibide.entities;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Stream;
 
 public class DataTyper extends HashMap<String, List<String>> {
 
@@ -12,11 +12,11 @@ public class DataTyper extends HashMap<String, List<String>> {
      * Will be able to read using the
      * following format:
      * Split dataTypes by ';'.
-     * Split variable names by ','.
-     * Between the dataType and variable name/s
+     * Split attribute names by ','.
+     * Between the dataType and attribute name/s
      * there should be an empty space.
      * It is allowed to add spaces before the
-     * dataType and after the variable name/s.
+     * dataType and after the attribute name/s.
      * The whitespace will be trimmed.
      * Example:
      * <pre>
@@ -27,7 +27,7 @@ public class DataTyper extends HashMap<String, List<String>> {
      * @param raw The raw string
      * @return The DataTyper
      */
-    public static DataTyper fromRaw(String raw){
+    public static DataTyper fromRaw(String raw) {
         DataTyper dataTyper = new DataTyper();
         String[] split = raw.split(";");
         for (String s : split) {
@@ -37,11 +37,11 @@ public class DataTyper extends HashMap<String, List<String>> {
         return dataTyper;
     }
 
-    public DataTyper(){
+    public DataTyper() {
         super();
     }
 
-    public void parseDataType(String input){
+    public void parseDataType(String input) {
         String[] split = input.split(" ");
         if (split.length != 2)
             throw new IllegalArgumentException("Invalid input");
@@ -62,5 +62,23 @@ public class DataTyper extends HashMap<String, List<String>> {
             list.add(name);
             this.put(dataType, list);
         }
+    }
+
+    public List<ObjectAttribute> listAttributes(){
+        List<ObjectAttribute> list = new ArrayList<>();
+        keySet().forEach(dataType -> {
+            List<String> names = get(dataType);
+            names.forEach(name -> list.add(new ObjectAttribute(dataType, name)));
+        });
+        return list;
+    }
+
+    public List<String> encapsulate(){
+        List<String> list = new ArrayList<>();
+        keySet().forEach(dataType -> {
+            List<String> names = get(dataType);
+            list.add("private " + dataType + " " + String.join(", ", names) + ";\n");
+        });
+        return list;
     }
 }

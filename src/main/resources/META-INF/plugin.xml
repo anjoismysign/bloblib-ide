@@ -18,9 +18,10 @@
 
     <actions>
         <group id="BlobLibIDE.Group" text="BlobLib" description="Handle blobLib related stuff">
-            <add-to-group group-id="ToolsMenu" anchor="last"/>
-            <action class="com.github.anjoismysign.bloblibide.actions.BlobObjectAction" id="BlobLibIDE.Actions.BlobObjectAction" text="Generate BlobObject"/>
-
+            <add-to-group group-id="NewGroup" anchor="first"/>
+            <action class="com.github.anjoismysign.bloblibide.actions.BlobObjectAction"
+                    id="BlobLibIDE.Actions.BlobObjectAction" text="BlobObject"
+                    icon="com.github.anjoismysign.bloblibide.MyIcons.BLOB_OBJECT"/>
         </group>
     </actions>
 </idea-plugin>
