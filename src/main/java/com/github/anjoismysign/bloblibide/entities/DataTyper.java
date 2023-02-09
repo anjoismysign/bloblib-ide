@@ -90,4 +90,24 @@ public class DataTyper extends HashMap<String, List<String>> {
         });
         return list;
     }
+
+    public String getDependencyInjection() {
+        StringBuilder builder = new StringBuilder();
+        listAttributes().forEach(attribute ->
+                builder.append(attribute.getDataType()).append(" ").append(attribute.getAttributeName()).append(","));
+        if (builder.length() > 0) {
+            builder.deleteCharAt(builder.length() - 1);
+        }
+        return builder.toString();
+    }
+
+    public String injectDependency() {
+        StringBuilder builder = new StringBuilder();
+        listAttributes().forEach(attribute -> {
+            String attributeName = attribute.getAttributeName();
+            builder.append("this.").append(attributeName).append(" = ")
+                    .append(attributeName).append(";\n");
+        });
+        return builder.toString();
+    }
 }

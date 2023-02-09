@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -31,7 +32,6 @@ public class ClassGenerator {
     private Function<String, String> classDeclaration;
     private final DefaultAttributes defaultAttributes;
     private final List<String> defaultFunctions;
-    private final List<ObjectAttribute> dependencyInjection;
 
     public static Optional<ClassGenerator> fromAnActionInsideNewGroup(AnActionEvent event, boolean dynamicDataTyper) {
         Project project = event.getProject();
@@ -88,7 +88,6 @@ public class ClassGenerator {
         classDeclaration = name -> "public class " + name + " {";
         defaultAttributes = new DefaultAttributes();
         defaultFunctions = new ArrayList<>();
-        dependencyInjection = new ArrayList<>();
     }
 
     private String content() {
@@ -97,12 +96,12 @@ public class ClassGenerator {
         String declarePackage = hasPackageName.map(s -> "package " + s + ";\n\n").orElse("");
         builder.append(declarePackage);
         builder.append(getImportCollection().importPackages());
-        builder.append(getClassDeclaration().apply(className)).append("\n\n");
+        builder.append(getClassDeclaration().apply(getClassName())).append("\n\n");
         getDefaultAttributes().encapsulate().forEach(builder::append);
         getDataTyper().encapsulate().forEach(builder::append);
         builder.append("\n");
-        builder.append("public ").append(className).append("(").append(getDependencyInjection()).append(") {\n");
-        builder.append(injectDependency());
+        builder.append("public ").append(getClassName()).append("(").append(getDataTyper().getDependencyInjection()).append(") {\n");
+        builder.append(getDataTyper().injectDependency());
         getDefaultAttributes().initialize().forEach(builder::append);
         builder.append("}\n\n");
         getDefaultAttributes().forEach(attribute -> builder.append(attribute.getter()).append(attribute.setter()));
@@ -121,7 +120,7 @@ public class ClassGenerator {
      * Will then reformat the class.
      */
     public void generate() {
-        ApplicationManager.getApplication().runWriteAction(() -> {
+        ReadAction.run(() -> ApplicationManager.getApplication().runWriteAction(() -> {
             try {
                 PsiFile psiFile = selectedDirectory.createFile(className + ".java");
                 psiFile.getContainingFile().getVirtualFile().setBinaryContent(content().getBytes(StandardCharsets.UTF_8));
@@ -133,7 +132,11 @@ public class ClassGenerator {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        });
+        }));
+    }
+
+    public String getClassName() {
+        return className;
     }
 
     private Function<String, String> getClassDeclaration() {
@@ -176,9 +179,10 @@ public class ClassGenerator {
     /**
      * Gets the default functions. The default functions are the functions that are
      * automatically generated when the class is created.
-     * Whenever added a new function, the String should include the visibility,
-     * return type, name, parameters and body.
-     * Example: "public void setName(String name) { this.name = name; }"
+     * Whenever added a new function, the String should include annotations,
+     * visibility, return type, name, parameters and body.
+     * Example 1: "public void setName(String name) { this.name = name; }"
+     * Example 2: "@Override public String toString() { return name; }"
      *
      * @return the default functions
      */
@@ -193,34 +197,5 @@ public class ClassGenerator {
      */
     public DataTyper getDataTyper() {
         return dataTyper;
-    }
-
-    public void addDependencyInjection(String attributeName) {
-        for (ObjectAttribute attribute : getDataTyper().listAttributes()) {
-            if (attribute.getAttributeName().equals(attributeName)) {
-                dependencyInjection.add(attribute);
-                break;
-            }
-        }
-    }
-
-    private String getDependencyInjection() {
-        StringBuilder builder = new StringBuilder();
-        dependencyInjection.forEach(attribute ->
-                builder.append(attribute.getDataType()).append(" ").append(attribute.getAttributeName()).append(","));
-        if (builder.length() > 0) {
-            builder.deleteCharAt(builder.length() - 1);
-        }
-        return builder.toString();
-    }
-
-    private String injectDependency() {
-        StringBuilder builder = new StringBuilder();
-        dependencyInjection.forEach(attribute -> {
-            String attributeName = attribute.getAttributeName();
-            builder.append("this.").append(attributeName).append(" = ")
-                    .append(attributeName).append(";\n");
-        });
-        return builder.toString();
     }
 }
