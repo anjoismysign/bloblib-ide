@@ -4,7 +4,6 @@ import com.github.anjoismysign.bloblibide.entities.ClassGenerator;
 import com.github.anjoismysign.bloblibide.entities.ImportCollection;
 import com.github.anjoismysign.bloblibide.entities.ObjectAttribute;
 import com.github.anjoismysign.bloblibide.libraries.ConfigurationSectionLib;
-import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
 import com.github.anjoismysign.bloblibide.libraries.PsiDirectoryLib;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -33,24 +32,28 @@ public class BlobObjectAction extends AnAction {
         importCollection.add("global.warming.commons.io.FilenameUtils");
         importCollection.add("org.bukkit.configuration.file.YamlConfiguration");
         importCollection.add("java.io.File");
+        if (classGenerator.getDataTyper().containsKey("ItemStack"))
+            importCollection.add("org.bukkit.inventory.ItemStack");
+        if (classGenerator.getDataTyper().containsKey("Location"))
+            importCollection.add("org.bukkit.Location");
+        if (classGenerator.getDataTyper().containsKey("Vector"))
+            importCollection.add("org.bukkit.util.Vector");
+        if (classGenerator.getDataTyper().containsKey("Color"))
+            importCollection.add("org.bukkit.Color");
+        if (classGenerator.getDataTyper().containsKey("OfflinePlayer"))
+            importCollection.add("org.bukkit.OfflinePlayer");
 
         List<ObjectAttribute> attributes = classGenerator.getDataTyper().listAttributes();
         StringBuilder saveToFile = new StringBuilder();
         saveToFile.append("@Override\n").append("public File saveToFile(File directory){ \n")
-                .append("    File file = directory + \"/\" + key + \".yml\");\n")
-                .append("    YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);\n\n")
-                .append("    //TODO check that yamlConfiguration can quickly serialize provided attributes\n")
-                .append("    //quick support dataTypes are List's of primitive's, org.bukkit.util.Vector,\n")
-                .append("    //org.bukkit.Location, org.bukkit.Color, org.bukkit.inventory.ItemStack,\n")
-                .append("    //and org.bukkit.OfflinePlayer.\n\n");
+                .append("    File file = new File(directory + \"/\" + getKey() + \".yml\");\n");
         attributes.forEach(attribute -> {
             if (attribute.getAttributeName().equals("key"))
                 return;
-            String pascalAttributeName = NamingConventions.toPascalCase(attribute.getAttributeName());
-            saveToFile.append("    yamlConfiguration.set(\"").append(pascalAttributeName)
-                    .append("\", get").append(pascalAttributeName).append("());\n");
+            ConfigurationSectionLib.saveToConfigurationSection(attribute,
+                    "yamlConfiguration", saveToFile);
         });
-        saveToFile.append("    try {\n").append("            config.save(file);\n")
+        saveToFile.append("    try {\n").append("            yamlConfiguration.save(file);\n")
                 .append("    } catch (Exception exception) {\n")
                 .append("        exception.printStackTrace();\n")
                 .append("    }")

@@ -5,20 +5,9 @@ import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
 import com.github.anjoismysign.bloblibide.libraries.PanelLib;
 import com.github.anjoismysign.bloblibide.libraries.PsiDirectoryLib;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ReadAction;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.codeStyle.CodeStyleManager;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,25 +23,11 @@ public class ClassGenerator {
     private final List<String> defaultFunctions;
 
     public static Optional<ClassGenerator> fromAnActionInsideNewGroup(AnActionEvent event, boolean dynamicDataTyper) {
-        Project project = event.getProject();
-        if (project == null) {
+        Optional<PsiDirectory> selectedPackageOptional = PsiDirectoryLib.getSelectedPackage(event);
+        if (selectedPackageOptional.isEmpty())
             return Optional.empty();
-        }
-        Uber<PsiDirectory> uberSelectedDirectory = new Uber<>(null);
-        DataContext dataContext = event.getDataContext();
-        PsiElement psiElement = CommonDataKeys.PSI_ELEMENT.getData(dataContext);
-        if (psiElement instanceof PsiDirectory) {
-            uberSelectedDirectory.talk((PsiDirectory) psiElement);
-        } else {
-            VirtualFile virtualFile = CommonDataKeys.VIRTUAL_FILE.getData(dataContext);
-            if (virtualFile != null && virtualFile.isDirectory()) {
-                PsiManager psiManager = PsiManager.getInstance(project);
-                uberSelectedDirectory.talk(psiManager.findDirectory(virtualFile));
-            }
-        }
-        if (uberSelectedDirectory.thanks() == null)
-            return Optional.empty();
-        PsiDirectory selectedDirectory = uberSelectedDirectory.thanks();
+        final Project project = event.getProject();
+        final PsiDirectory selectedDirectory = selectedPackageOptional.get();
         Uber<String> input = new Uber<>("ClassNameNotFound");
         input.talk(PanelLib.requestString("Class name", "Enter the class/object name below", "Please provide a class name. \n" +
                 "Recursion will be used until then.", project));
@@ -75,7 +50,14 @@ public class ClassGenerator {
                     "Example 4: 'String name,lastname;int age;double income,expenses'", "Invalid input. Recursion will be used until then.", project);
             dataTyper = DataTyper.fromRaw(raw);
         }
-        return Optional.of(new ClassGenerator(selectedDirectory, className, dataTyper));
+        ClassGenerator classGenerator = new ClassGenerator(selectedDirectory, className, dataTyper);
+        if (dataTyper.includesList())
+            classGenerator.getImportCollection().add("java.util.List");
+        if (dataTyper.containsKey("BigInteger"))
+            classGenerator.getImportCollection().add("java.math.BigInteger");
+        if (dataTyper.containsKey("BigDecimal"))
+            classGenerator.getImportCollection().add("java.math.BigDecimal");
+        return Optional.of(classGenerator);
     }
 
     public ClassGenerator(PsiDirectory selectedDirectory,
@@ -120,19 +102,7 @@ public class ClassGenerator {
      * Will then reformat the class.
      */
     public void generate() {
-        ReadAction.run(() -> ApplicationManager.getApplication().runWriteAction(() -> {
-            try {
-                PsiFile psiFile = selectedDirectory.createFile(className + ".java");
-                psiFile.getContainingFile().getVirtualFile().setBinaryContent(content().getBytes(StandardCharsets.UTF_8));
-                WriteCommandAction.runWriteCommandAction(psiFile.getProject(), () -> {
-                    CodeStyleManager.getInstance(psiFile.getProject()).reformat(psiFile);
-                });
-                selectedDirectory.getVirtualFile().refresh(false, true);
-                psiFile.navigate(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }));
+        PsiDirectoryLib.generateClass(selectedDirectory, className, content(), true);
     }
 
     public String getClassName() {

@@ -8,6 +8,8 @@ import java.util.List;
 
 public class DataTyper extends HashMap<String, List<String>> {
 
+    private boolean includesList = false;
+
     /**
      * Creates a DataTyper from a raw string
      * Will be able to read using the
@@ -63,6 +65,9 @@ public class DataTyper extends HashMap<String, List<String>> {
      *                 Will be converted to camelCase.
      */
     public void add(String dataType, String name) {
+        if (dataType.startsWith("List<")) {
+            includesList = true;
+        }
         name = NamingConventions.toCamelCase(name);
         if (this.containsKey(dataType)) {
             this.get(dataType).add(name);
@@ -109,5 +114,9 @@ public class DataTyper extends HashMap<String, List<String>> {
                     .append(attributeName).append(";\n");
         });
         return builder.toString();
+    }
+
+    public boolean includesList() {
+        return includesList;
     }
 }

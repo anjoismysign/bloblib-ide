@@ -3,15 +3,39 @@
     <id>com.github.anjoismysign.bloblibide</id>
     <name>BlobLib-IDE</name>
     <vendor>anjoismysign</vendor>
+    <change-notes>&lt;h2&gt;&lt;a href="https://github.com/anjoismysign/bloblib-ide/commits"&gt;Unreleased&lt;/a&gt;&lt;/h2&gt;
+
+        &lt;h3&gt;Added&lt;/h3&gt;
+        &lt;ul&gt;&lt;li&gt;BlobObject class generator&lt;/li&gt;&lt;/ul&gt;
+    </change-notes>
+    <description>&lt;p&gt;This plugin provides a set of tools for working with the BlobLib library collection.
+        This set of tools will help you at developing Bukkit plugins.&lt;/p&gt;
+
+        &lt;ul&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox" class="task-list-item-checkbox" checked
+        disabled /&gt;BlobObject class generator&lt;/li&gt;&lt;li class="task-list-item"&gt;&lt;input type="checkbox"
+        class="task-list-item-checkbox" disabled /&gt;ObjectBuilder class generator&lt;/li&gt;&lt;/ul&gt;
+    </description>
 
     <depends>com.intellij.modules.platform</depends>
 
     <actions>
-        <group id="BlobLibIDE.Group" text="BlobLib" description="Handle blobLib related stuff">
+        <group id="BlobLibIDE.BlobObject" text="BlobLib" description="Handle BlobLib related stuff">
             <add-to-group group-id="NewGroup" anchor="first"/>
             <action class="com.github.anjoismysign.bloblibide.actions.BlobObjectAction"
                     id="BlobLibIDE.Actions.BlobObjectAction" text="BlobObject"
-                    icon="com.github.anjoismysign.bloblibide.MyIcons.BLOB_OBJECT"/>
+                    icon="com.github.anjoismysign.bloblibide.MyIcons.BLOBLIB"/>
+        </group>
+        <group id="BlobLibIDE.BlobPlugin" text="BlobLib" description="Handle BlobLib related stuff">
+            <add-to-group group-id="NewGroup" anchor="first"/>
+            <action class="com.github.anjoismysign.bloblibide.actions.BlobPluginAction"
+                    id="BlobLibIDE.Actions.BlobPluginAction" text="BlobPlugin"
+                    icon="com.github.anjoismysign.bloblibide.MyIcons.BLOBLIB"/>
+        </group>
+        <group id="BlobLibIDE.ManagerPackageSetup" text="BlobLib" description="Handle BlobLib related stuff">
+            <add-to-group group-id="NewGroup" anchor="first"/>
+            <action class="com.github.anjoismysign.bloblibide.actions.ManagerPackageSetupAction"
+                    id="BlobLibIDE.Actions.ManagerPackageSetupAction" text="Setup Director Package"
+                    icon="com.github.anjoismysign.bloblibide.MyIcons.BLOBLIB"/>
         </group>
     </actions>
 </idea-plugin>

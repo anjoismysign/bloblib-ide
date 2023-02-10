@@ -39,11 +39,11 @@ public class ConfigurationSectionLib {
                 dataType.equals("boolean") || dataType.equals("char") || dataType.equals("Integer") ||
                 dataType.equals("Double") || dataType.equals("Float") || dataType.equals("Long") ||
                 dataType.equals("Short") || dataType.equals("Byte") || dataType.equals("Boolean") ||
-                dataType.equals("Character");
+                dataType.equals("Character") || dataType.equals("BigInteger") || dataType.equals("BigDecimal");
     }
 
-    public static String getPrimitiveMethod(ObjectAttribute attribute,
-                                            String configurationSectionVariableName) {
+    public static String primitiesGetMethods(ObjectAttribute attribute,
+                                             String configurationSectionVariableName) {
         String dataType = attribute.getDataType();
         String pascalAttributeName = NamingConventions.toPascalCase(attribute.getAttributeName());
         switch (dataType) {
@@ -79,10 +79,28 @@ public class ConfigurationSectionLib {
             case "char": {
                 return "(char) " + configurationSectionVariableName + ".getString(\"" + pascalAttributeName + "\").charAt(0);";
             }
+            case "BigInteger": {
+                return "new BigInteger(" + configurationSectionVariableName + ".getString(\"" + pascalAttributeName + "\"));";
+            }
+            case "BigDecimal": {
+                return "new BigDecimal(" + configurationSectionVariableName + ".getString(\"" + pascalAttributeName + "\"));";
+            }
             default: {
                 return "null; //TODO ConfigurationSectionLib.java error, contact bloblib-ide developers that '" + dataType + "' is not supported";
             }
         }
+    }
+
+    public static String applySetMethods(ObjectAttribute attribute,
+                                         String configurationSectionVariableName) {
+        String dataType = attribute.getDataType();
+        String pascalAttributeName = NamingConventions.toPascalCase(attribute.getAttributeName());
+        if (dataType.equals("BigInteger") || dataType.equals("BigDecimal")) {
+            return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + attribute.getAttributeName() + ".toString());";
+        } else {
+            return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + attribute.getAttributeName() + ");";
+        }
+
     }
 
     /**
@@ -124,14 +142,13 @@ public class ConfigurationSectionLib {
             if (isPrimitiveOrWrapper(dataType)) {
                 function.append("    ").append(dataType).append(" ")
                         .append(attribute.getAttributeName())
-                        .append(" = ").append(getPrimitiveMethod(attribute,
+                        .append(" = ").append(primitiesGetMethods(attribute,
                                 configurationSectionVariableName)).append("\n");
                 return;
             }
             function.append("    ").append("Object").append(" ").append(attribute.getAttributeName())
                     .append(" = ").append(configurationSectionVariableName).append(".get(\"")
-                    .append(pascalAttributeName).append("\");\n")
-                    .append("    //TODO dataType has no quick parser. Reimplement this attribute yourself");
+                    .append(pascalAttributeName).append("\");\n").append("    //TODO '").append(dataType).append("' has no quick parser. Reimplement this attribute yourself\n");
             return;
         }
         function.append("    ").append(attribute.getDataType()).append(" ")
@@ -139,5 +156,20 @@ public class ConfigurationSectionLib {
                 .append(configurationSectionVariableName).append(".get")
                 .append(parse.get()).append("(\"")
                 .append(pascalAttributeName).append("\");\n");
+    }
+
+    /**
+     * Will convert BigInteger and BigDecimal to decimal String value before saving to the ConfigurationSection,
+     * so it can be read back in as a BigInteger or BigDecimal by parsing the String value.
+     *
+     * @param attribute                        Attribute to save
+     * @param configurationSectionVariableName Variable name of the ConfigurationSection
+     * @param saveToFile                       Function to append to
+     */
+    public static void saveToConfigurationSection(ObjectAttribute attribute,
+                                                  String configurationSectionVariableName,
+                                                  StringBuilder saveToFile) {
+        String applySetMethods = applySetMethods(attribute, configurationSectionVariableName);
+        saveToFile.append("    ").append(applySetMethods).append("\n");
     }
 }
