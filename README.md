@@ -1,7 +1,7 @@
 # bloblib-ide
 
 <!-- Plugin description -->
-This plugin provides a set of tools for working with the BlobLib library collection.
+This plugin provides a set of tools for working with the BlobLib library collection in IntelliJ IDEA.
 This set of tools will help you at developing Bukkit plugins.
 
 - [x] BlobPlugin class generator
