@@ -33,7 +33,8 @@ public class ObjectAttribute {
      * Example for ArrayList&lt;String&gt;:
      * <p>
      * this.list = new ArrayList&lt;String&gt;();
-     * @return
+     *
+     * @return The initialization code.
      */
     public String initialize() {
         return "this." + attributeName + " = new " + dataType + "();\n";

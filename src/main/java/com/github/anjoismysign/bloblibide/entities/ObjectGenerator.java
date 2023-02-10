@@ -23,6 +23,17 @@ public class ObjectGenerator {
     private final List<String> defaultFunctions;
     private final DataTyper finalDataTyper;
 
+    /**
+     * Will create a new ObjectGenerator from AnActionEvent.
+     *
+     * @param event            AnActionEvent
+     * @param dynamicDataTyper If true, will ask for data types individually.
+     *                         If false, will ask a raw string and parse it.
+     *                         Raw string is just splitting data types by
+     *                         a semicolon ';'. Then each DataType is read
+     *                         normally.
+     * @return Should always check if it is empty. It is guaranteed to work at current time.
+     */
     public static Optional<ObjectGenerator> fromAnActionInsideNewGroup(AnActionEvent event, boolean dynamicDataTyper) {
         Optional<PsiDirectory> selectedPackageOptional = PsiDirectoryLib.getSelectedPackage(event);
         if (selectedPackageOptional.isEmpty())
@@ -61,6 +72,18 @@ public class ObjectGenerator {
         return Optional.of(classGenerator);
     }
 
+    /**
+     * Will create a new ObjectGenerator.
+     * ImportCollection will be empty.
+     * ClassDeclaration will be "public class " + name + " {"
+     * DefaultAttributes will be empty.
+     * DefaultFunctions will be empty.
+     * FinalDataTyper will be empty.
+     *
+     * @param selectedDirectory The directory where the class will be created.
+     * @param className         The name of the class.
+     * @param dataTyper         The DataTyper that will be used to generate the class.
+     */
     public ObjectGenerator(PsiDirectory selectedDirectory,
                            String className,
                            DataTyper dataTyper) {
@@ -85,13 +108,13 @@ public class ObjectGenerator {
         getDataTyper().encapsulate().forEach(builder::append);
         getFinalDataTyper().encapsulate(true).forEach(builder::append);
         builder.append("\n");
-        String finalDependencyInjection = getFinalDataTyper().getDependencyInjection();
+        String finalDependencyInjection = getFinalDataTyper().getConstructorParameters();
         if (finalDependencyInjection.length() != 0)
             finalDependencyInjection = ", " + finalDependencyInjection;
-        builder.append("public ").append(getClassName()).append("(").append(getDataTyper().getDependencyInjection())
+        builder.append("public ").append(getClassName()).append("(").append(getDataTyper().getConstructorParameters())
                 .append(finalDependencyInjection).append(") {\n");
-        builder.append(getDataTyper().injectDependency());
-        builder.append(getFinalDataTyper().injectDependency());
+        builder.append(getDataTyper().getConstructorBody());
+        builder.append(getFinalDataTyper().getConstructorBody());
         getDefaultAttributes().initialize().forEach(builder::append);
         builder.append("}\n\n");
         getDefaultAttributes().forEach(attribute -> builder.append(attribute.getter()).append(attribute.setter()));
@@ -115,6 +138,11 @@ public class ObjectGenerator {
         PsiDirectoryLib.generateClass(selectedDirectory, className, content(), true);
     }
 
+    /**
+     * Gets the class name of the object without the ".java" extension.
+     *
+     * @return the class name
+     */
     public String getClassName() {
         return className;
     }

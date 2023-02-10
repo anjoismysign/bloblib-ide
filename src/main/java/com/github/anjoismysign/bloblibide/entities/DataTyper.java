@@ -14,7 +14,7 @@ public class DataTyper extends HashMap<String, List<String>> {
      * Creates a DataTyper from a raw string
      * Will be able to read using the
      * following format:
-     * Split dataTypes by ';'.
+     * Split dataTypes by ';' semicolon.
      * Split attribute names by ','.
      * Between the dataType and attribute name/s
      * there should be an empty space.
@@ -44,6 +44,20 @@ public class DataTyper extends HashMap<String, List<String>> {
         super();
     }
 
+    /**
+     * Will parse a single dataType and add it to the DataTyper.
+     * It allows for multiple attributes to be added at once.
+     * DataType and attributes are separated by an empty space.
+     * Attributes are separated by a comma.
+     * Example:
+     * <pre>
+     *     String name,lastname
+     *     int age
+     *     List&lt;String&gt; names
+     *     </pre>
+     *
+     * @param input The input string
+     */
     public void parseDataType(String input) {
         String[] split = input.split(" ");
         if (split.length != 2)
@@ -78,6 +92,12 @@ public class DataTyper extends HashMap<String, List<String>> {
         }
     }
 
+    /**
+     * Will list all ObjectAttributes inside
+     * the DataTyper.
+     *
+     * @return The list of ObjectAttributes
+     */
     public List<ObjectAttribute> listAttributes() {
         List<ObjectAttribute> list = new ArrayList<>();
         keySet().forEach(dataType -> {
@@ -87,6 +107,17 @@ public class DataTyper extends HashMap<String, List<String>> {
         return list;
     }
 
+    /**
+     * Will encapsulate attributes giving an output
+     * such as:
+     * <pre>
+     *     private final String name;
+     *     private boolean isAlive;
+     *     </pre>
+     *
+     * @param areFinal If the attributes should be final
+     * @return The encapsulated attributes
+     */
     public List<String> encapsulate(boolean areFinal) {
         List<String> list = new ArrayList<>();
         keySet().forEach(dataType -> {
@@ -99,11 +130,26 @@ public class DataTyper extends HashMap<String, List<String>> {
         return list;
     }
 
+    /**
+     * Will encapsulate attributes (not final) with
+     * an output such as:
+     * <pre>
+     *     private String name;
+     *     private boolean isAlive;
+     *     </pre>
+     *
+     * @return The encapsulated attributes
+     */
     public List<String> encapsulate() {
         return encapsulate(false);
     }
 
-    public String getDependencyInjection() {
+    /**
+     * What goes inside the constructor parameters
+     *
+     * @return The constructor parameters
+     */
+    public String getConstructorParameters() {
         StringBuilder builder = new StringBuilder();
         listAttributes().forEach(attribute ->
                 builder.append(attribute.getDataType()).append(" ")
@@ -114,7 +160,12 @@ public class DataTyper extends HashMap<String, List<String>> {
         return builder.toString();
     }
 
-    public String injectDependency() {
+    /**
+     * What goes inside the constructor body
+     *
+     * @return The constructor body
+     */
+    public String getConstructorBody() {
         StringBuilder builder = new StringBuilder();
         listAttributes().forEach(attribute -> {
             String attributeName = attribute.getAttributeName();
@@ -124,6 +175,11 @@ public class DataTyper extends HashMap<String, List<String>> {
         return builder.toString();
     }
 
+    /**
+     * If it contains a List&lt;?&gt;
+     *
+     * @return If it contains a List&lt;?&gt;
+     */
     public boolean includesList() {
         return includesList;
     }

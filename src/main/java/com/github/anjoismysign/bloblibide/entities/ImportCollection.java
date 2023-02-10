@@ -9,6 +9,7 @@ public class ImportCollection extends ArrayList<String> {
 
     /**
      * Adds a package to the import list if it is not already present
+     *
      * @param importPackage The package to add
      */
     public void addImport(String importPackage) {
@@ -22,11 +23,11 @@ public class ImportCollection extends ArrayList<String> {
     /**
      * Returns a string containing all the imports
      * ready to be added to the top of the .java file.
+     *
      * @return A string containing all the imports in the list
      */
     public String importPackages() {
         StringBuilder builder = new StringBuilder();
-        //split list in two, one for java packages, one for other packages
         ArrayList<String> javaPackages = new ArrayList<>();
         ArrayList<String> otherPackages = new ArrayList<>();
         for (String importPackage : this) {
