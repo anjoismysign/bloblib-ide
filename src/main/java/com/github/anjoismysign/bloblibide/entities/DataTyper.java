@@ -87,19 +87,27 @@ public class DataTyper extends HashMap<String, List<String>> {
         return list;
     }
 
-    public List<String> encapsulate() {
+    public List<String> encapsulate(boolean areFinal) {
         List<String> list = new ArrayList<>();
         keySet().forEach(dataType -> {
             List<String> names = get(dataType);
-            list.add("private " + dataType + " " + String.join(", ", names) + ";\n");
+            if (areFinal)
+                list.add("private final " + dataType + " " + String.join(", ", names) + ";\n");
+            else
+                list.add("private " + dataType + " " + String.join(", ", names) + ";\n");
         });
         return list;
+    }
+
+    public List<String> encapsulate() {
+        return encapsulate(false);
     }
 
     public String getDependencyInjection() {
         StringBuilder builder = new StringBuilder();
         listAttributes().forEach(attribute ->
-                builder.append(attribute.getDataType()).append(" ").append(attribute.getAttributeName()).append(","));
+                builder.append(attribute.getDataType()).append(" ")
+                        .append(attribute.getAttributeName()).append(","));
         if (builder.length() > 0) {
             builder.deleteCharAt(builder.length() - 1);
         }

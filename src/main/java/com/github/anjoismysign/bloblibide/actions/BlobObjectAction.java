@@ -26,7 +26,7 @@ public class BlobObjectAction extends AnAction {
             return;
         ObjectGenerator objectGenerator = optional.get();
         objectGenerator.setClassDeclaration(className -> "public class " + className + " implements BlobObject {");
-        objectGenerator.getDataTyper().add("String", "key");
+        objectGenerator.getFinalDataTyper().add("String", "key");
         ImportCollection importCollection = objectGenerator.getImportCollection();
         importCollection.add("us.mytheria.bloblib.entities.BlobObject");
         importCollection.add("global.warming.commons.io.FilenameUtils");
@@ -46,7 +46,8 @@ public class BlobObjectAction extends AnAction {
         List<ObjectAttribute> attributes = objectGenerator.getDataTyper().listAttributes();
         StringBuilder saveToFile = new StringBuilder();
         saveToFile.append("@Override\n").append("public File saveToFile(File directory){ \n")
-                .append("    File file = new File(directory + \"/\" + getKey() + \".yml\");\n");
+                .append("    File file = new File(directory + \"/\" + getKey() + \".yml\");\n")
+                .append("    YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);\n");
         attributes.forEach(attribute -> {
             if (attribute.getAttributeName().equals("key"))
                 return;

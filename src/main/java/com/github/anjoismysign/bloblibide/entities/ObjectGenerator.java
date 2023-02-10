@@ -21,6 +21,7 @@ public class ObjectGenerator {
     private Function<String, String> classDeclaration;
     private final DefaultAttributes defaultAttributes;
     private final List<String> defaultFunctions;
+    private final DataTyper finalDataTyper;
 
     public static Optional<ObjectGenerator> fromAnActionInsideNewGroup(AnActionEvent event, boolean dynamicDataTyper) {
         Optional<PsiDirectory> selectedPackageOptional = PsiDirectoryLib.getSelectedPackage(event);
@@ -70,6 +71,7 @@ public class ObjectGenerator {
         classDeclaration = name -> "public class " + name + " {";
         defaultAttributes = new DefaultAttributes();
         defaultFunctions = new ArrayList<>();
+        finalDataTyper = new DataTyper();
     }
 
     private String content() {
@@ -81,12 +83,20 @@ public class ObjectGenerator {
         builder.append(getClassDeclaration().apply(getClassName())).append("\n\n");
         getDefaultAttributes().encapsulate().forEach(builder::append);
         getDataTyper().encapsulate().forEach(builder::append);
+        getFinalDataTyper().encapsulate(true).forEach(builder::append);
         builder.append("\n");
-        builder.append("public ").append(getClassName()).append("(").append(getDataTyper().getDependencyInjection()).append(") {\n");
+        String finalDependencyInjection = getFinalDataTyper().getDependencyInjection();
+        if (finalDependencyInjection.length() != 0)
+            finalDependencyInjection = ", " + finalDependencyInjection;
+        builder.append("public ").append(getClassName()).append("(").append(getDataTyper().getDependencyInjection())
+                .append(finalDependencyInjection).append(") {\n");
         builder.append(getDataTyper().injectDependency());
+        builder.append(getFinalDataTyper().injectDependency());
         getDefaultAttributes().initialize().forEach(builder::append);
         builder.append("}\n\n");
         getDefaultAttributes().forEach(attribute -> builder.append(attribute.getter()).append(attribute.setter()));
+        getFinalDataTyper().listAttributes().forEach(attribute ->
+                builder.append(attribute.getter()));
         getDataTyper().listAttributes().forEach(attribute ->
                 builder.append(attribute.getter()).append(attribute.setter()));
         getDefaultFunctions().forEach(string -> builder.append(string).append("\n"));
@@ -167,5 +177,15 @@ public class ObjectGenerator {
      */
     public DataTyper getDataTyper() {
         return dataTyper;
+    }
+
+    /**
+     * Retrieves the final data typer. Variables inside this data
+     * typer are final variables, which means they won't have setters.
+     *
+     * @return the final data typer
+     */
+    public DataTyper getFinalDataTyper() {
+        return finalDataTyper;
     }
 }
