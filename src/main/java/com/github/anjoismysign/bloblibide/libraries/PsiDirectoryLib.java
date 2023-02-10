@@ -57,7 +57,20 @@ public class PsiDirectoryLib {
             });
         });
         return Optional.ofNullable(uberCreatedPackage.thanks());
+    }
 
+    public static Optional<PsiDirectory> createPackage(PsiDirectory currentPackage, String append) {
+        Uber<PsiDirectory> uberCreatedPackage = new Uber<>(null);
+        ReadAction.run(() -> {
+            ApplicationManager.getApplication().runWriteAction(() -> {
+                try {
+                    uberCreatedPackage.talk(currentPackage.createSubdirectory(append));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+        return Optional.ofNullable(uberCreatedPackage.thanks());
     }
 
     public static Optional<PsiDirectory> getSelectedPackage(AnActionEvent event) {
@@ -100,6 +113,10 @@ public class PsiDirectoryLib {
         split = path.split("/src/");
         String packageName = split[1].replace("/", ".");
         return Optional.of(packageName);
+    }
+
+    public static String getPackageNameOrEmpty(PsiDirectory directory) {
+        return getPackageName(directory).orElse("");
     }
 
     public static void disablePresentationIfNotInsideSrcFolder(AnActionEvent event) {

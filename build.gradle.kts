@@ -67,7 +67,7 @@ tasks {
         sinceBuild.set(properties("pluginSinceBuild"))
         untilBuild.set(properties("pluginUntilBuild"))
 
-        // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
+        //Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
 //        pluginDescription.set(
 //                file("README.md").readText().lines().run {
 //                    val start = "<!-- Plugin description -->"
@@ -86,7 +86,7 @@ tasks {
 //                renderItem(
 //                        getOrNull(properties("pluginVersion"))
 //                                ?: runCatching { getLatest() }.getOrElse { getUnreleased() },
-//                        Changelog.OutputType.HTML,
+//                        org.jetbrains.changelog.Changelog.OutputType.HTML,
 //                )
 //            }
 //        })

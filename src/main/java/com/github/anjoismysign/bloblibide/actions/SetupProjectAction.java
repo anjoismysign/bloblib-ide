@@ -12,8 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class BlobPluginAction extends AnAction {
+import static com.github.anjoismysign.bloblibide.actions.BlobPluginAction.content;
 
+public class SetupProjectAction extends AnAction {
     @Override
     public void update(@NotNull AnActionEvent event) {
         PsiDirectoryLib.disablePresentationIfNotInsideSrcFolder(event);
@@ -26,6 +27,7 @@ public class BlobPluginAction extends AnAction {
             return;
         final Project project = event.getProject();
         final PsiDirectory currentPackage = currentPackageOptional.get();
+        final String currentPackateAddress = PsiDirectoryLib.getPackageNameOrEmpty(currentPackage);
         Uber<String> classNameInput = new Uber<>("BlobPluginNotFound");
         classNameInput.talk(PanelLib.requestString("BlobPlugin", "Enter BlobPlugin class name (without '.java')\n" +
                 "Note: will be converted to pascal case\n" +
@@ -33,6 +35,7 @@ public class BlobPluginAction extends AnAction {
                 "Recursion will be used until then.", project));
         classNameInput.talk(NamingConventions.toPascalCase(classNameInput.thanks()));
         final String className = classNameInput.thanks();
+        final String blobPluginImport = currentPackateAddress + "." + className;
         Uber<String> codeInput = new Uber<>("NamingCodeNotFound");
         codeInput.talk(PanelLib.requestString("Naming Code", "Enter naming code. Will be used for generating classes\n" +
                 "Note: will be converted to pascal case\n" +
@@ -40,44 +43,11 @@ public class BlobPluginAction extends AnAction {
                 "Recursion will be used until then.", project));
         codeInput.talk(NamingConventions.toPascalCase(codeInput.thanks()));
         final String namingCode = codeInput.thanks();
-        PsiDirectoryLib.generateClass(currentPackage, className,
-                content(currentPackage, namingCode, className), true);
-    }
-
-    protected static String content(PsiDirectory psiManagerPackage, String namingCode, String className) {
-        String currentPackage = PsiDirectoryLib.getPackageNameOrEmpty(psiManagerPackage);
-        String importPackage = "package " + currentPackage + ";\n\n";
-        return importPackage + "import org.bukkit.Bukkit;\n" +
-                "import us.mytheria.bloblib.managers.BlobPlugin;\n" +
-                "import " + currentPackage + ".director." + namingCode + "ManagerDirector;\n" +
-                "\n" +
-                "public final class " + className + " extends BlobPlugin {\n" +
-                "\n" +
-                "    private " + namingCode + "ManagerDirector director;\n" +
-                "\n" +
-                "    public static " + className + " instance;\n" +
-                "\n" +
-                "    public static " + className + " getInstance() {\n" +
-                "        return instance;\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public void onEnable() {\n" +
-                "        instance = this;\n" +
-                "        director = new " + namingCode + "ManagerDirector();\n" +
-                "        Bukkit.getScheduler().runTask(this, () ->\n" +
-                "                director.postWorld());\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public void onDisable() {\n" +
-                "        unregisterFromBlobLib();\n" +
-                "    }\n" +
-                "\n" +
-                "    @Override\n" +
-                "    public " + namingCode + "ManagerDirector getManagerDirector() {\n" +
-                "        return director;\n" +
-                "    }\n" +
-                "}";
+        PsiDirectoryLib.generateClass(currentPackage, className, content(currentPackage, namingCode, className));
+        Optional<PsiDirectory> directorPackageOptional = PsiDirectoryLib.createPackage(currentPackage, "director");
+        if (directorPackageOptional.isEmpty())
+            return;
+        final PsiDirectory directorPackage = directorPackageOptional.get();
+        ManagerPackageSetupAction.setup(directorPackage, namingCode, className, blobPluginImport);
     }
 }

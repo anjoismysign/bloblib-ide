@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class ClassGenerator {
+public class ObjectGenerator {
     private final PsiDirectory selectedDirectory;
     private final String className;
     private final DataTyper dataTyper;
@@ -22,7 +22,7 @@ public class ClassGenerator {
     private final DefaultAttributes defaultAttributes;
     private final List<String> defaultFunctions;
 
-    public static Optional<ClassGenerator> fromAnActionInsideNewGroup(AnActionEvent event, boolean dynamicDataTyper) {
+    public static Optional<ObjectGenerator> fromAnActionInsideNewGroup(AnActionEvent event, boolean dynamicDataTyper) {
         Optional<PsiDirectory> selectedPackageOptional = PsiDirectoryLib.getSelectedPackage(event);
         if (selectedPackageOptional.isEmpty())
             return Optional.empty();
@@ -50,7 +50,7 @@ public class ClassGenerator {
                     "Example 4: 'String name,lastname;int age;double income,expenses'", "Invalid input. Recursion will be used until then.", project);
             dataTyper = DataTyper.fromRaw(raw);
         }
-        ClassGenerator classGenerator = new ClassGenerator(selectedDirectory, className, dataTyper);
+        ObjectGenerator classGenerator = new ObjectGenerator(selectedDirectory, className, dataTyper);
         if (dataTyper.includesList())
             classGenerator.getImportCollection().add("java.util.List");
         if (dataTyper.containsKey("BigInteger"))
@@ -60,9 +60,9 @@ public class ClassGenerator {
         return Optional.of(classGenerator);
     }
 
-    public ClassGenerator(PsiDirectory selectedDirectory,
-                          String className,
-                          DataTyper dataTyper) {
+    public ObjectGenerator(PsiDirectory selectedDirectory,
+                           String className,
+                           DataTyper dataTyper) {
         this.selectedDirectory = selectedDirectory;
         this.className = className;
         this.dataTyper = dataTyper;

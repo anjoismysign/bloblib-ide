@@ -6,8 +6,6 @@ import com.github.anjoismysign.bloblibide.libraries.PanelLib;
 import com.github.anjoismysign.bloblibide.libraries.PsiDirectoryLib;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import org.jetbrains.annotations.NotNull;
@@ -34,34 +32,33 @@ public class ManagerPackageSetupAction extends AnAction {
                 "Example 1: 'BlobRP'", "Please provide a class name \n" +
                 "Recursion will be used until then.", project));
         classNameInput.talk(NamingConventions.toPascalCase(classNameInput.thanks()));
-        String className = classNameInput.thanks();
+        final String className = classNameInput.thanks();
         Uber<String> codeInput = new Uber<>("NamingCodeNotFound");
         codeInput.talk(PanelLib.requestString("Naming Code", "Enter naming code. Will be used for generating classes\n" +
                 "Note: will be converted to pascal case\n" +
                 "Example for 'RP' would be RPManager and RPManagerDirector", "Please provide a naming code.\n" +
                 "Recursion will be used until then.", project));
         codeInput.talk(NamingConventions.toPascalCase(codeInput.thanks()));
-        String namingCode = codeInput.thanks();
+        final String namingCode = codeInput.thanks();
+        setup(directorPackage, namingCode, className, "");
+    }
+
+    public static void setup(PsiDirectory directorPackage, String namingCode,
+                             String className, String blobPluginImport) {
         PsiDirectoryLib.generateClass(directorPackage, namingCode + "Manager", managerContent(directorPackage, namingCode));
-        ReadAction.run(() -> ApplicationManager.getApplication().runWriteAction(() -> {
-            try {
-                final PsiDirectory managerPackage = directorPackage.createSubdirectory("manager");
-                PsiDirectoryLib.generateClass(managerPackage, "ConfigManager", configManagerContent(managerPackage, namingCode, className));
-                PsiDirectoryLib.generateClass(managerPackage, "ListenerManager", listenerManagerContent(managerPackage, namingCode));
-                PsiDirectoryLib.generateClass(directorPackage, namingCode + "ManagerDirector",
-                        managerDirectorContent(directorPackage, namingCode, className), true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }));
+        Optional<PsiDirectory> managerPackageOptional = PsiDirectoryLib.createPackage(directorPackage, "manager");
+        if (managerPackageOptional.isEmpty())
+            return;
+        final PsiDirectory managerPackage = managerPackageOptional.get();
+        PsiDirectoryLib.generateClass(managerPackage, "ConfigManager", configManagerContent(managerPackage, namingCode, className));
+        PsiDirectoryLib.generateClass(managerPackage, "ListenerManager", listenerManagerContent(managerPackage, namingCode));
+        PsiDirectoryLib.generateClass(directorPackage, namingCode + "ManagerDirector",
+                managerDirectorContent(directorPackage, namingCode, className, blobPluginImport), true);
     }
 
-    private String getPackageOrEmpty(PsiDirectory directorPackage) {
-        return PsiDirectoryLib.getPackageName(directorPackage).orElse("");
-    }
 
-    private String listenerManagerContent(PsiDirectory psiManagerPackage, String namingCode) {
-        String managerPackage = getPackageOrEmpty(psiManagerPackage);
+    private static String listenerManagerContent(PsiDirectory psiManagerPackage, String namingCode) {
+        String managerPackage = PsiDirectoryLib.getPackageNameOrEmpty(psiManagerPackage);
         String directorPackage = managerPackage.substring(0, managerPackage.length() - 8);
         managerPackage = "package " + managerPackage + ";\n\n";
         return managerPackage + "import " + directorPackage + "." + namingCode + "Manager;\n" +
@@ -80,8 +77,8 @@ public class ManagerPackageSetupAction extends AnAction {
                 "}";
     }
 
-    private String configManagerContent(PsiDirectory psiManagerPackage, String namingCode, String className) {
-        String managerPackage = getPackageOrEmpty(psiManagerPackage);
+    private static String configManagerContent(PsiDirectory psiManagerPackage, String namingCode, String className) {
+        String managerPackage = PsiDirectoryLib.getPackageNameOrEmpty(psiManagerPackage);
         String directorPackage = managerPackage.substring(0, managerPackage.length() - 8);
         managerPackage = "package " + managerPackage + ";\n\n";
         return managerPackage + "import org.bukkit.configuration.ConfigurationSection;\n" +
@@ -114,9 +111,9 @@ public class ManagerPackageSetupAction extends AnAction {
                 "}";
     }
 
-    private String managerContent(PsiDirectory psiDirectorPackage, String namingCode) {
+    private static String managerContent(PsiDirectory psiDirectorPackage, String namingCode) {
         String className = namingCode + "Manager";
-        String directorPackage = getPackageOrEmpty(psiDirectorPackage);
+        String directorPackage = PsiDirectoryLib.getPackageNameOrEmpty(psiDirectorPackage);
         directorPackage = "package " + directorPackage + ";\n\n";
         return directorPackage +
                 "import us.mytheria.bloblib.managers.Manager;\n" +
@@ -132,11 +129,15 @@ public class ManagerPackageSetupAction extends AnAction {
                 "}";
     }
 
-    private String managerDirectorContent(PsiDirectory psiDirectorPackage, String namingCode, String className) {
-        String directorPackage = getPackageOrEmpty(psiDirectorPackage);
+    private static String managerDirectorContent(PsiDirectory psiDirectorPackage, String namingCode,
+                                                 String className, String blobPluginImport) {
+        String directorPackage = PsiDirectoryLib.getPackageNameOrEmpty(psiDirectorPackage);
         String managerPackage = directorPackage + ".manager";
+        if (blobPluginImport.length() != 0)
+            blobPluginImport = "import " + blobPluginImport + ";\n";
         directorPackage = "package " + directorPackage + ";\n\n";
         return directorPackage + "import us.mytheria.bloblib.managers.ManagerDirector;\n" +
+                blobPluginImport +
                 "import " + managerPackage + ".ConfigManager;\n" +
                 "import " + managerPackage + ".ListenerManager;\n" +
                 "\n" +
