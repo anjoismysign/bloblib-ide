@@ -50,7 +50,8 @@ public class ManagerPackageSetupAction extends AnAction {
         if (managerPackageOptional.isEmpty())
             return;
         final PsiDirectory managerPackage = managerPackageOptional.get();
-        PsiDirectoryLib.generateClass(managerPackage, "ConfigManager", configManagerContent(managerPackage, namingCode, className));
+        PsiDirectoryLib.generateClass(managerPackage, "ConfigManager", configManagerContent(managerPackage,
+                namingCode, className, blobPluginImport));
         PsiDirectoryLib.generateClass(managerPackage, "ListenerManager", listenerManagerContent(managerPackage, namingCode));
         PsiDirectoryLib.generateClass(directorPackage, namingCode + "ManagerDirector",
                 managerDirectorContent(directorPackage, namingCode, className, blobPluginImport), true);
@@ -77,15 +78,19 @@ public class ManagerPackageSetupAction extends AnAction {
                 "}";
     }
 
-    private static String configManagerContent(PsiDirectory psiManagerPackage, String namingCode, String className) {
+    private static String configManagerContent(PsiDirectory psiManagerPackage, String namingCode,
+                                               String className, String blobPluginImport) {
         String managerPackage = PsiDirectoryLib.getPackageNameOrEmpty(psiManagerPackage);
         String directorPackage = managerPackage.substring(0, managerPackage.length() - 8);
+        if (blobPluginImport.length() != 0)
+            blobPluginImport = "import " + blobPluginImport + ";\n";
         managerPackage = "package " + managerPackage + ";\n\n";
         return managerPackage + "import org.bukkit.configuration.ConfigurationSection;\n" +
                 "import org.bukkit.configuration.file.FileConfiguration;\n" +
                 "import us.mytheria.bloblib.entities.SimpleEventListener;\n" +
                 "import " + directorPackage + "." + namingCode + "Manager;\n" +
                 "import " + directorPackage + "." + namingCode + "ManagerDirector;\n" +
+                blobPluginImport +
                 "\n" +
                 "public class ConfigManager extends " + namingCode + "Manager {\n" +
                 "    private SimpleEventListener<Boolean> listenerExample;\n" +
