@@ -13,10 +13,24 @@ public class ConfigurationSectionLib {
      * @param dataType DataType to check
      * @return true if DataType is a primitive wrapper or a String, false otherwise
      */
-    public static boolean isQuickListable(String dataType) {
+    public static boolean isQuickIterable(String dataType) {
         return dataType.equals("Integer") || dataType.equals("Double") || dataType.equals("Float") ||
                 dataType.equals("Long") || dataType.equals("Short") || dataType.equals("Byte") || dataType.equals("Boolean") ||
                 dataType.equals("Character") || dataType.equals("String");
+    }
+
+    /**
+     * Will check if DataType is a listable which was given support
+     * by BlobLib through ConfigurationSectionLib.
+     *
+     * @param dataType DataType to check
+     * @return true if DataType is supported, false otherwise
+     */
+    public static boolean isCustomQuickIterable(String dataType) {
+        return dataType.equals("Vector") || dataType.equals("Location") || dataType.equals("Color")
+                || dataType.equals("OfflinePlayer") || dataType.equals("BlockVector") ||
+                dataType.equals("Block") || dataType.equals("BigInteger") ||
+                dataType.equals("BigDecimal") || dataType.equals("UUID");
     }
 
     /**
@@ -95,12 +109,28 @@ public class ConfigurationSectionLib {
                                          String configurationSectionVariableName) {
         String dataType = attribute.getDataType();
         String pascalAttributeName = NamingConventions.toPascalCase(attribute.getAttributeName());
-        if (dataType.equals("BigInteger") || dataType.equals("BigDecimal")) {
-            return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + attribute.getAttributeName() + ".toString());";
-        } else {
-            return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + attribute.getAttributeName() + ");";
+        switch (dataType) {
+            case "BigInteger":
+            case "BigDecimal": {
+                return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + attribute.getAttributeName() + ".toString());";
+            }
+            case "List<Vector>":
+            case "List<BlockVector>":
+            case "List<Location>":
+            case "List<Block>":
+            case "List<Color>":
+            case "List<OfflinePlayer>":
+            case "List<UUID>":
+            case "List<BigInteger>":
+            case "List<BigDecimal>": {
+                dataType = dataType.replace("List<", "");
+                dataType = dataType.replace(">", "");
+                return "ConfigurationSectionLib.serialize" + dataType + "List(" + attribute.getAttributeName() + ", " + configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+            }
+            default: {
+                return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + attribute.getAttributeName() + ");";
+            }
         }
-
     }
 
     /**
@@ -113,15 +143,21 @@ public class ConfigurationSectionLib {
     public static Optional<String> parseType(ObjectAttribute attribute) {
         String dataType = attribute.getDataType();
         if (!dataType.contains("List")) {
+            if (dataType.contains("Map")) {
+                if (!isQuickIterable(dataType) && !isCustomQuickIterable(dataType)) {
+                    return Optional.empty();
+                }
+                return Optional.of(dataType + "Map");
+            }
             if (!hasQuickObjectSupport(dataType))
                 return Optional.empty();
             return Optional.of(dataType);
         }
-        dataType = dataType.replace("<", "");
         dataType = dataType.replace(">", "");
-        dataType = dataType.replace("List", "");
-        if (!isQuickListable(dataType))
+        dataType = dataType.replace("List<", "");
+        if (!isQuickIterable(dataType) && !isCustomQuickIterable(dataType)) {
             return Optional.empty();
+        }
         return Optional.of(dataType + "List");
     }
 
@@ -137,8 +173,10 @@ public class ConfigurationSectionLib {
                                                    StringBuilder function) {
         String pascalAttributeName = NamingConventions.toPascalCase(attribute.getAttributeName());
         Optional<String> parse = parseType(attribute);
+        String dataType = attribute.getDataType();
+        String removeList = dataType.replace("List<", "");
+        removeList = removeList.replace(">", "");
         if (parse.isEmpty()) {
-            String dataType = attribute.getDataType();
             if (isPrimitiveOrWrapper(dataType)) {
                 function.append("    ").append(dataType).append(" ")
                         .append(attribute.getAttributeName())
@@ -149,6 +187,13 @@ public class ConfigurationSectionLib {
             function.append("    ").append("Object").append(" ").append(attribute.getAttributeName())
                     .append(" = ").append(configurationSectionVariableName).append(".get(\"")
                     .append(pascalAttributeName).append("\");\n").append("    //TODO '").append(dataType).append("' has no quick parser. Reimplement this attribute yourself\n");
+            return;
+        }
+        if (isCustomQuickIterable(removeList)) {
+            function.append("    ").append(attribute.getDataType()).append(" ")
+                    .append(attribute.getAttributeName()).append(" = ConfigurationSectionLib.deserialize")
+                    .append(removeList).append("List(").append(configurationSectionVariableName)
+                    .append(", \"").append(pascalAttributeName).append("\");\n");
             return;
         }
         function.append("    ").append(attribute.getDataType()).append(" ")
