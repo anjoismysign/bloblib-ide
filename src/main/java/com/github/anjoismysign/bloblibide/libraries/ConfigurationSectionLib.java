@@ -174,8 +174,6 @@ public class ConfigurationSectionLib {
         String pascalAttributeName = NamingConventions.toPascalCase(attribute.getAttributeName());
         Optional<String> parse = parseType(attribute);
         String dataType = attribute.getDataType();
-        String removeList = dataType.replace("List<", "");
-        removeList = removeList.replace(">", "");
         if (parse.isEmpty()) {
             if (isPrimitiveOrWrapper(dataType)) {
                 function.append("    ").append(dataType).append(" ")
@@ -189,12 +187,27 @@ public class ConfigurationSectionLib {
                     .append(pascalAttributeName).append("\");\n").append("    //TODO '").append(dataType).append("' has no quick parser. Reimplement this attribute yourself\n");
             return;
         }
-        if (isCustomQuickIterable(removeList)) {
-            function.append("    ").append(attribute.getDataType()).append(" ")
-                    .append(attribute.getAttributeName()).append(" = ConfigurationSectionLib.deserialize")
-                    .append(removeList).append("List(").append(configurationSectionVariableName)
-                    .append(", \"").append(pascalAttributeName).append("\");\n");
-            return;
+        if (dataType.contains("List")) {
+            dataType = dataType.replace("List<", "");
+            dataType = dataType.replace(">", "");
+            if (isCustomQuickIterable(dataType)) {
+                function.append("    ").append(attribute.getDataType()).append(" ")
+                        .append(attribute.getAttributeName()).append(" = ConfigurationSectionLib.deserialize")
+                        .append(dataType).append("List(").append(configurationSectionVariableName)
+                        .append(", \"").append(pascalAttributeName).append("\");\n");
+                return;
+            }
+        }
+        if (dataType.contains("Map")) {
+            dataType = dataType.replace("Map<", "");
+            dataType = dataType.replace(">", "");
+            if (isCustomQuickIterable(dataType) || isQuickIterable(dataType)) {
+                function.append("    ").append(attribute.getDataType()).append(" ")
+                        .append(attribute.getAttributeName()).append(" = ConfigurationSectionLib.deserialize")
+                        .append(dataType).append("List(").append(configurationSectionVariableName)
+                        .append(", \"").append(pascalAttributeName).append("\");\n");
+                return;
+            }
         }
         function.append("    ").append(attribute.getDataType()).append(" ")
                 .append(attribute.getAttributeName()).append(" = ")
