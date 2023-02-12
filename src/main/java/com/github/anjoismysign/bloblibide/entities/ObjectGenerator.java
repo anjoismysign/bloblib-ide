@@ -108,11 +108,11 @@ public class ObjectGenerator {
         getDataTyper().encapsulate().forEach(builder::append);
         getFinalDataTyper().encapsulate(true).forEach(builder::append);
         builder.append("\n");
-        String finalDependencyInjection = getFinalDataTyper().getConstructorParameters();
-        if (finalDependencyInjection.length() != 0)
-            finalDependencyInjection = ", " + finalDependencyInjection;
+        String finalConstructorParameters = getFinalDataTyper().getConstructorParameters();
+        if (finalConstructorParameters.length() != 0)
+            finalConstructorParameters = ", " + finalConstructorParameters;
         builder.append("public ").append(getClassName()).append("(").append(getDataTyper().getConstructorParameters())
-                .append(finalDependencyInjection).append(") {\n");
+                .append(finalConstructorParameters).append(") {\n");
         builder.append(getDataTyper().getConstructorBody());
         builder.append(getFinalDataTyper().getConstructorBody());
         getDefaultAttributes().initialize().forEach(builder::append);

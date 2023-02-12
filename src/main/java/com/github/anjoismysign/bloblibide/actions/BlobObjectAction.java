@@ -44,16 +44,13 @@ public class BlobObjectAction extends AnAction {
             importCollection.add("org.bukkit.OfflinePlayer");
 
         List<ObjectAttribute> attributes = objectGenerator.getDataTyper().listAttributes();
+        List<ObjectAttribute> finalAttributes = objectGenerator.getFinalDataTyper().listAttributes();
         StringBuilder saveToFile = new StringBuilder();
         saveToFile.append("@Override\n").append("public File saveToFile(File directory){ \n")
                 .append("    File file = new File(directory + \"/\" + getKey() + \".yml\");\n")
                 .append("    YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);\n");
-        attributes.forEach(attribute -> {
-            if (attribute.getAttributeName().equals("key"))
-                return;
-            ConfigurationSectionLib.saveToConfigurationSection(attribute,
-                    "yamlConfiguration", saveToFile);
-        });
+        attributes.forEach(attribute -> ConfigurationSectionLib.saveToConfigurationSection(attribute,
+                "yamlConfiguration", saveToFile));
         saveToFile.append("    try {\n").append("            yamlConfiguration.save(file);\n")
                 .append("    } catch (Exception exception) {\n")
                 .append("        exception.printStackTrace();\n")
@@ -65,15 +62,12 @@ public class BlobObjectAction extends AnAction {
         loadFromFile.append("public static ").append(objectGenerator.getClassName()).append(" fromFile(File file){ \n")
                 .append("    String fileName = file.getName();\n")
                 .append("    YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);");
-        attributes.forEach(attribute -> {
-            if (attribute.getAttributeName().equals("key"))
-                return;
-            ConfigurationSectionLib.getFromConfigurationSection(attribute,
-                    "yamlConfiguration", loadFromFile);
-        });
+        attributes.forEach(attribute -> ConfigurationSectionLib.getFromConfigurationSection(attribute,
+                "yamlConfiguration", loadFromFile));
         loadFromFile.append("    String key = FilenameUtils.removeExtension(fileName);\n");
         loadFromFile.append("    return new ").append(objectGenerator.getClassName()).append("(");
         attributes.forEach(attribute -> loadFromFile.append(attribute.getAttributeName()).append(", "));
+        finalAttributes.forEach(attribute -> loadFromFile.append(attribute.getAttributeName()).append(", "));
         loadFromFile.delete(loadFromFile.length() - 2, loadFromFile.length());
         loadFromFile.append(");\n")
                 .append("}");
