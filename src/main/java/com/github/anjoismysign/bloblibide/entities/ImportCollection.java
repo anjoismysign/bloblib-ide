@@ -1,8 +1,9 @@
 package com.github.anjoismysign.bloblibide.entities;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
-public class ImportCollection extends ArrayList<String> {
+public class ImportCollection extends HashSet<String> {
     public ImportCollection() {
         super();
     }

@@ -56,8 +56,6 @@ public class DataTypeLib {
      * @return The wrapper class of the primitive data type.
      */
     public static String findPrimitiveWrapper(String primitiveDataType) {
-
-
         switch (primitiveDataType) {
             case "byte": {
                 return "Byte";

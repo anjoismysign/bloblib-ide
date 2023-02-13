@@ -3,13 +3,14 @@ package com.github.anjoismysign.bloblibide.entities;
 import com.github.anjoismysign.bloblibide.libraries.DataTypeLib;
 import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class DataTyper extends HashMap<String, List<String>> {
     private boolean includesList = false;
     private boolean includesMap = false;
+    private final Set<String> mapKeys;
+    private final Set<String> mapValues;
+    private final Set<String> listValues;
 
     /**
      * Creates a DataTyper from a raw string
@@ -43,6 +44,9 @@ public class DataTyper extends HashMap<String, List<String>> {
 
     public DataTyper() {
         super();
+        mapKeys = new HashSet<>();
+        mapValues = new HashSet<>();
+        listValues = new HashSet<>();
     }
 
     /**
@@ -87,7 +91,9 @@ public class DataTyper extends HashMap<String, List<String>> {
         dataType = dataType.replace("HashMap", "Map");
         if (dataType.startsWith("List<")) {
             String generic = dataType.substring(5, dataType.length() - 1);
-            dataType = dataType.replace(generic, DataTypeLib.getWrapper(generic).orElse(generic));
+            String wrapper = DataTypeLib.getWrapper(generic).orElse(generic);
+            listValues.add(wrapper);
+            dataType = dataType.replace(generic, wrapper);
             includesList = true;
         }
         if (dataType.startsWith("Map<")) {
@@ -95,8 +101,12 @@ public class DataTyper extends HashMap<String, List<String>> {
             String[] split = generic.split(",");
             String key = split[0].trim();
             String value = split[1].trim();
-            dataType = dataType.replace(key, DataTypeLib.getWrapper(key).orElse(key));
-            dataType = dataType.replace(value, DataTypeLib.getWrapper(value).orElse(value));
+            String keyWrapper = DataTypeLib.getWrapper(key).orElse(key);
+            mapKeys.add(keyWrapper);
+            String valueWrapper = DataTypeLib.getWrapper(value).orElse(value);
+            mapValues.add(valueWrapper);
+            dataType = dataType.replace(key, keyWrapper);
+            dataType = dataType.replace(value, valueWrapper);
             includesMap = true;
         }
         name = NamingConventions.toCamelCase(name);
@@ -208,5 +218,25 @@ public class DataTyper extends HashMap<String, List<String>> {
      */
     public boolean includesMap() {
         return includesMap;
+    }
+
+    public Set<String> getListValues() {
+        return listValues;
+    }
+
+    public Set<String> getMapKeys() {
+        return mapKeys;
+    }
+
+    public Set<String> getMapValues() {
+        return mapValues;
+    }
+
+    public boolean containsDataTypeInMap(String dataType) {
+        return mapKeys.contains(dataType) || mapValues.contains(dataType);
+    }
+
+    public boolean containsDataTypeInList(String dataType) {
+        return listValues.contains(dataType);
     }
 }

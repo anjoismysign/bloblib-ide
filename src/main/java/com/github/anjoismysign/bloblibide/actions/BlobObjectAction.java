@@ -1,9 +1,11 @@
 package com.github.anjoismysign.bloblibide.actions;
 
+import com.github.anjoismysign.bloblibide.entities.DataTyper;
 import com.github.anjoismysign.bloblibide.entities.ImportCollection;
 import com.github.anjoismysign.bloblibide.entities.ObjectAttribute;
 import com.github.anjoismysign.bloblibide.entities.ObjectGenerator;
 import com.github.anjoismysign.bloblibide.libraries.ConfigurationSectionLib;
+import com.github.anjoismysign.bloblibide.libraries.ImportLib;
 import com.github.anjoismysign.bloblibide.libraries.PsiDirectoryLib;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -25,9 +27,11 @@ public class BlobObjectAction extends AnAction {
         if (optional.isEmpty())
             return;
         ObjectGenerator objectGenerator = optional.get();
+        DataTyper dataTyper = objectGenerator.getDataTyper();
         objectGenerator.setClassDeclaration(className -> "public class " + className + " implements BlobObject {");
         objectGenerator.getFinalDataTyper().add("String", "key");
         ImportCollection importCollection = objectGenerator.getImportCollection();
+        ImportLib.applyConfigurationSectionImports(importCollection, dataTyper);
         importCollection.add("us.mytheria.bloblib.entities.BlobObject");
         importCollection.add("global.warming.commons.io.FilenameUtils");
         importCollection.add("org.bukkit.configuration.file.YamlConfiguration");
