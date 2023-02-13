@@ -36,8 +36,12 @@ public class BlobObjectAction extends AnAction {
             importCollection.add("org.bukkit.inventory.ItemStack");
         if (objectGenerator.getDataTyper().containsKey("Location"))
             importCollection.add("org.bukkit.Location");
+        if (objectGenerator.getDataTyper().containsKey("Block"))
+            importCollection.add("org.bukkit.block.Block");
         if (objectGenerator.getDataTyper().containsKey("Vector"))
             importCollection.add("org.bukkit.util.Vector");
+        if (objectGenerator.getDataTyper().containsKey("BlockVector"))
+            importCollection.add("org.bukkit.util.BlockVector");
         if (objectGenerator.getDataTyper().containsKey("Color"))
             importCollection.add("org.bukkit.Color");
         if (objectGenerator.getDataTyper().containsKey("OfflinePlayer"))

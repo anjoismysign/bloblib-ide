@@ -1,5 +1,6 @@
 package com.github.anjoismysign.bloblibide.libraries;
 
+import com.github.anjoismysign.bloblibide.entities.ConfigurationSectionAllowed;
 import com.github.anjoismysign.bloblibide.entities.ObjectAttribute;
 
 import java.util.Optional;
@@ -56,41 +57,34 @@ public class ConfigurationSectionLib {
                 dataType.equals("Character") || dataType.equals("BigInteger") || dataType.equals("BigDecimal");
     }
 
-    public static String primitiesGetMethods(ObjectAttribute attribute,
-                                             String configurationSectionVariableName) {
+    public static String primitivesGetMethods(ObjectAttribute attribute,
+                                              String configurationSectionVariableName) {
         String dataType = attribute.getDataType();
+        dataType = DataTypeLib.findPrimitiveWrapper(dataType);
         String pascalAttributeName = NamingConventions.toPascalCase(attribute.getAttributeName());
         switch (dataType) {
-            case "byte":
             case "Byte": {
                 return "(byte) " + configurationSectionVariableName + ".getInt(\"" + pascalAttributeName + "\");";
             }
-            case "Short":
-            case "short": {
+            case "Short": {
                 return "(short) " + configurationSectionVariableName + ".getInt(\"" + pascalAttributeName + "\");";
             }
-            case "Integer":
-            case "int": {
+            case "Integer": {
                 return configurationSectionVariableName + ".getInt(\"" + pascalAttributeName + "\");";
             }
-            case "Long":
-            case "long": {
+            case "Long": {
                 return configurationSectionVariableName + ".getLong(\"" + pascalAttributeName + "\");";
             }
-            case "Float":
-            case "float": {
+            case "Float": {
                 return "(float) " + configurationSectionVariableName + ".getDouble(\"" + pascalAttributeName + "\");";
             }
-            case "Double":
-            case "double": {
+            case "Double": {
                 return configurationSectionVariableName + ".getDouble(\"" + pascalAttributeName + "\");";
             }
-            case "Boolean":
-            case "boolean": {
+            case "Boolean": {
                 return configurationSectionVariableName + ".getBoolean(\"" + pascalAttributeName + "\");";
             }
-            case "Character":
-            case "char": {
+            case "Character": {
                 return "(char) " + configurationSectionVariableName + ".getString(\"" + pascalAttributeName + "\").charAt(0);";
             }
             case "BigInteger": {
@@ -108,12 +102,40 @@ public class ConfigurationSectionLib {
     public static String applySetMethods(ObjectAttribute attribute,
                                          String configurationSectionVariableName) {
         String dataType = attribute.getDataType();
-        String pascalAttributeName = NamingConventions.toPascalCase(attribute.getAttributeName());
+        String attributeName = attribute.getAttributeName();
+        String pascalAttributeName = NamingConventions.toPascalCase(attributeName);
+        if (isQuickIterable(dataType)) {
+            return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + attributeName + ");";
+        }
+        if (isCustomQuickIterable(dataType)) {
+            String serialized = "SerializationLib.serialize(\"" + attributeName + "\")";
+            return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + serialized + ");";
+        }
+        if (dataType.startsWith("Map<String, ")) {
+            String valueDataType = dataType.replace("Map<String,", "");
+            valueDataType = valueDataType.replace(">", "");
+            return "ConfigurationSectionLib.serialize" + valueDataType + "Map(" + attributeName + ", " + configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+        }
+        Optional<ConfigurationSectionAllowed> primitive = ConfigurationSectionAllowed.isPrimitiveNeedsConversion(dataType);
+        if (primitive.isPresent()) {
+            ConfigurationSectionAllowed allowed = primitive.get();
+            String valueDataType = dataType.replace("Map<" + allowed.getDataType() + ",", "");
+            valueDataType = valueDataType.replace(">", "");
+            return "ConfigurationSectionLib.serialize" + valueDataType + "Map(MapLib.toStringKeys(" + attributeName + "), " + configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+        }
+        Optional<ConfigurationSectionAllowed> custom = ConfigurationSectionAllowed.isCustomNeedsConversion(dataType);
+        if (custom.isPresent()) {
+            ConfigurationSectionAllowed allowed = custom.get();
+            String allowedDataType = allowed.getDataType();
+            String camelCaseAllowedDataType = NamingConventions.toCamelCase(allowedDataType);
+            String valueDataType = dataType.replace("Map<" +
+                    allowedDataType + ",", "");
+            valueDataType = valueDataType.replace(">", "");
+            return "ConfigurationSectionLib.serialize" + valueDataType +
+                    "Map(MapLib." + camelCaseAllowedDataType + "ToStringKeys(" + attributeName + "), "
+                    + configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+        }
         switch (dataType) {
-            case "BigInteger":
-            case "BigDecimal": {
-                return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + attribute.getAttributeName() + ".toString());";
-            }
             case "List<Vector>":
             case "List<BlockVector>":
             case "List<Location>":
@@ -125,10 +147,11 @@ public class ConfigurationSectionLib {
             case "List<BigDecimal>": {
                 dataType = dataType.replace("List<", "");
                 dataType = dataType.replace(">", "");
-                return "ConfigurationSectionLib.serialize" + dataType + "List(" + attribute.getAttributeName() + ", " + configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+                return "ConfigurationSectionLib.serialize" + dataType + "List(" + attributeName + ", " + configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
             }
             default: {
-                return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + attribute.getAttributeName() + ");";
+                return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + attribute.getAttributeName() + ");\n" +
+                        "            //TODO '" + dataType + "' is not supported. Implement it yourself.";
             }
         }
     }
@@ -142,12 +165,20 @@ public class ConfigurationSectionLib {
      */
     public static Optional<String> parseType(ObjectAttribute attribute) {
         String dataType = attribute.getDataType();
-        if (!dataType.contains("List")) {
-            if (dataType.contains("Map")) {
-                if (!isQuickIterable(dataType) && !isCustomQuickIterable(dataType)) {
+        if (!dataType.startsWith("List")) {
+            if (dataType.startsWith("Map")) {
+                dataType = dataType.replace("Map<", "");
+                dataType = dataType.replace(">", "");
+                String[] split = dataType.split(",");
+                String key = split[0].trim();
+                String value = split[1].trim();
+                if (!isQuickIterable(value) && !isCustomQuickIterable(value)) {
                     return Optional.empty();
                 }
-                return Optional.of(dataType + "Map");
+                if (!isQuickIterable(key) && !isCustomQuickIterable(key)) {
+                    return Optional.empty();
+                }
+                return Optional.of(key + "Map");
             }
             if (!hasQuickObjectSupport(dataType))
                 return Optional.empty();
@@ -178,16 +209,16 @@ public class ConfigurationSectionLib {
             if (isPrimitiveOrWrapper(dataType)) {
                 function.append("    ").append(dataType).append(" ")
                         .append(attribute.getAttributeName())
-                        .append(" = ").append(primitiesGetMethods(attribute,
+                        .append(" = ").append(primitivesGetMethods(attribute,
                                 configurationSectionVariableName)).append("\n");
                 return;
             }
             function.append("    ").append("Object").append(" ").append(attribute.getAttributeName())
                     .append(" = ").append(configurationSectionVariableName).append(".get(\"")
-                    .append(pascalAttributeName).append("\");\n").append("    //TODO '").append(dataType).append("' has no quick parser. Reimplement this attribute yourself\n");
+                    .append(pascalAttributeName).append("\");\n").append("    //TODO '").append(dataType).append("' has no quick parser. Reimplement this attribute yourself\n\n");
             return;
         }
-        if (dataType.contains("List")) {
+        if (dataType.startsWith("List")) {
             dataType = dataType.replace("List<", "");
             dataType = dataType.replace(">", "");
             if (isCustomQuickIterable(dataType)) {
@@ -195,25 +226,63 @@ public class ConfigurationSectionLib {
                         .append(attribute.getAttributeName()).append(" = ConfigurationSectionLib.deserialize")
                         .append(dataType).append("List(").append(configurationSectionVariableName)
                         .append(", \"").append(pascalAttributeName).append("\");\n");
-                return;
+            } else {
+                function.append("    ").append(attribute.getDataType()).append(" ")
+                        .append(attribute.getAttributeName()).append(" = ")
+                        .append(configurationSectionVariableName).append(".getList(\"")
+                        .append(pascalAttributeName).append("\");\n")
+                        .append("    //TODO '").append(dataType)
+                        .append("' has no quick parser. Reimplement this attribute yourself\n\n");
             }
+            return;
         }
-        if (dataType.contains("Map")) {
+        if (dataType.startsWith("Map")) {
             dataType = dataType.replace("Map<", "");
             dataType = dataType.replace(">", "");
-            if (isCustomQuickIterable(dataType) || isQuickIterable(dataType)) {
-                function.append("    ").append(attribute.getDataType()).append(" ")
-                        .append(attribute.getAttributeName()).append(" = ConfigurationSectionLib.deserialize")
-                        .append(dataType).append("List(").append(configurationSectionVariableName)
-                        .append(", \"").append(pascalAttributeName).append("\");\n");
+            String[] split = dataType.split(",");
+            ConfigurationSectionAllowed key = ConfigurationSectionAllowed.fromName(split[0]);
+            ConfigurationSectionAllowed value = ConfigurationSectionAllowed.fromName(split[1]);
+            if (!key.needsPrimitiveConversion() && !key.needsCustomConversion()) {
+                function.append("    ").append("Object").append(" ").append(attribute.getAttributeName())
+                        .append(" = ").append(configurationSectionVariableName).append(".get(\"")
+                        .append(pascalAttributeName).append("\");\n").append("    //TODO '").append(dataType).append("' has no quick parser. Reimplement this attribute yourself\n\n");
                 return;
             }
+            if (!value.needsPrimitiveConversion() && !value.needsCustomConversion()) {
+                function.append("    ").append("Object").append(" ").append(attribute.getAttributeName())
+                        .append(" = ").append(configurationSectionVariableName).append(".get(\"")
+                        .append(pascalAttributeName).append("\");\n").append("    //TODO '").append(dataType).append("' has no quick parser. Reimplement this attribute yourself\n\n");
+                return;
+            }
+            String keyType = key.getDataType();
+            String valueType = value.getDataType();
+            if (key.needsPrimitiveConversion()) {
+                if (keyType.equals("String"))
+                    function.append("    ").append(attribute.getDataType()).append(" ")
+                            .append(attribute.getAttributeName()).append(" = ConfigurationSectionLib.deserialize")
+                            .append(valueType).append("Map(").append(configurationSectionVariableName)
+                            .append(", \"").append(pascalAttributeName).append("\");\n");
+                else
+                    function.append("    ").append(attribute.getDataType()).append(" ")
+                            .append(attribute.getAttributeName()).append(" = MapLib.to")
+                            .append(keyType).append("Keys(")
+                            .append("ConfigurationSectionLib.deserialize")
+                            .append(valueType).append("Map(").append(configurationSectionVariableName)
+                            .append(", \"").append(pascalAttributeName).append("\"));\n");
+                return;
+            }
+            if (key.needsCustomConversion()) {
+                function.append("    ").append(attribute.getDataType()).append(" ")
+                        .append(attribute.getAttributeName()).append(" = MapLib.to").append(keyType).append("Keys(ConfigurationSectionLib.deserialize")
+                        .append(keyType).append("Map(").append(configurationSectionVariableName)
+                        .append(", \"").append(pascalAttributeName).append("\"));\n");
+                return;
+            }
+            function.append("    ").append("Object").append(" ").append(attribute.getAttributeName())
+                    .append(" = ").append(configurationSectionVariableName).append(".get(\"")
+                    .append(pascalAttributeName).append("\");\n").append("    //TODO '").append(dataType)
+                    .append("' has no quick parser. Reimplement this attribute yourself\n\n");
         }
-        function.append("    ").append(attribute.getDataType()).append(" ")
-                .append(attribute.getAttributeName()).append(" = ")
-                .append(configurationSectionVariableName).append(".get")
-                .append(parse.get()).append("(\"")
-                .append(pascalAttributeName).append("\");\n");
     }
 
     /**

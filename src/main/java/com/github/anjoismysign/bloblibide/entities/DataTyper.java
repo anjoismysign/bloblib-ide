@@ -1,5 +1,6 @@
 package com.github.anjoismysign.bloblibide.entities;
 
+import com.github.anjoismysign.bloblibide.libraries.DataTypeLib;
 import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
 
 import java.util.ArrayList;
@@ -7,8 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class DataTyper extends HashMap<String, List<String>> {
-
     private boolean includesList = false;
+    private boolean includesMap = false;
 
     /**
      * Creates a DataTyper from a raw string
@@ -73,14 +74,30 @@ public class DataTyper extends HashMap<String, List<String>> {
 
     /**
      * Will add an attribute to the DataTyper.
+     * Will also convert primitives to their wrapper class.
+     * Will also convert ArrayList to List and HashMap to Map.
+     * This is done on purpose for improving maintainability.
      *
      * @param dataType The data type of the attribute
      * @param name     The name of the attribute.
      *                 Will be converted to camelCase.
      */
     public void add(String dataType, String name) {
+        dataType = dataType.replace("ArrayList", "List");
+        dataType = dataType.replace("HashMap", "Map");
         if (dataType.startsWith("List<")) {
+            String generic = dataType.substring(5, dataType.length() - 1);
+            dataType = dataType.replace(generic, DataTypeLib.getWrapper(generic).orElse(generic));
             includesList = true;
+        }
+        if (dataType.startsWith("Map<")) {
+            String generic = dataType.substring(4, dataType.length() - 1);
+            String[] split = generic.split(",");
+            String key = split[0].trim();
+            String value = split[1].trim();
+            dataType = dataType.replace(key, DataTypeLib.getWrapper(key).orElse(key));
+            dataType = dataType.replace(value, DataTypeLib.getWrapper(value).orElse(value));
+            includesMap = true;
         }
         name = NamingConventions.toCamelCase(name);
         if (this.containsKey(dataType)) {
@@ -182,5 +199,14 @@ public class DataTyper extends HashMap<String, List<String>> {
      */
     public boolean includesList() {
         return includesList;
+    }
+
+    /**
+     * If it contains a Map&lt;?&gt;
+     *
+     * @return If it contains a Map&lt;?&gt;
+     */
+    public boolean includesMap() {
+        return includesMap;
     }
 }

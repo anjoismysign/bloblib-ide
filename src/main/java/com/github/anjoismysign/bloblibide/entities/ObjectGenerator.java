@@ -65,6 +65,8 @@ public class ObjectGenerator {
         ObjectGenerator classGenerator = new ObjectGenerator(selectedDirectory, className, dataTyper);
         if (dataTyper.includesList())
             classGenerator.getImportCollection().add("java.util.List");
+        if (dataTyper.includesMap())
+            classGenerator.getImportCollection().add("java.util.Map");
         if (dataTyper.containsKey("BigInteger"))
             classGenerator.getImportCollection().add("java.math.BigInteger");
         if (dataTyper.containsKey("BigDecimal"))
