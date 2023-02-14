@@ -239,4 +239,9 @@ public class DataTyper extends HashMap<String, List<String>> {
     public boolean containsDataTypeInList(String dataType) {
         return listValues.contains(dataType);
     }
+
+    public boolean containsDataType(String dataType) {
+        return containsDataTypeInList(dataType) || containsDataTypeInMap(dataType)
+                || containsKey(dataType);
+    }
 }

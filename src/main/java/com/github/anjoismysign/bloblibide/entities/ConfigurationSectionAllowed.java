@@ -21,7 +21,23 @@ public enum ConfigurationSectionAllowed {
     COLOR,
     LOCATION,
     BLOCK,
-    OFFLINE_PLAYER;
+    OFFLINE_PLAYER,
+    WORLD,
+    WEATHER_TYPE,
+    TREE_TYPE,
+    PARTICLE,
+    MUSIC_INSTRUMENT,
+    MATERIAL,
+    INSTRUMENT,
+    GAMEMODE,
+    FLUID,
+    ENTITY_TYPE,
+    ENTITY_EFFECT,
+    ENCHANTMENT,
+    EFFECT,
+    DYE_COLOR,
+    DIFFICULTY,
+    CROP_STATE;
 
     private static final HashMap<ConfigurationSectionAllowed, String> dataTypes = new HashMap<>();
     private static final HashMap<String, ConfigurationSectionAllowed> dataTypesBackwards = new HashMap<>();
@@ -45,6 +61,22 @@ public enum ConfigurationSectionAllowed {
         dataTypes.put(LOCATION, "Location");
         dataTypes.put(BLOCK, "Block");
         dataTypes.put(OFFLINE_PLAYER, "OfflinePlayer");
+        dataTypes.put(WORLD, "World");
+        dataTypes.put(WEATHER_TYPE, "WeatherType");
+        dataTypes.put(TREE_TYPE, "TreeType");
+        dataTypes.put(PARTICLE, "Particle");
+        dataTypes.put(MUSIC_INSTRUMENT, "MusicInstrument");
+        dataTypes.put(MATERIAL, "Material");
+        dataTypes.put(INSTRUMENT, "Instrument");
+        dataTypes.put(GAMEMODE, "GameMode");
+        dataTypes.put(FLUID, "Fluid");
+        dataTypes.put(ENTITY_TYPE, "EntityType");
+        dataTypes.put(ENTITY_EFFECT, "EntityEffect");
+        dataTypes.put(ENCHANTMENT, "Enchantment");
+        dataTypes.put(EFFECT, "Effect");
+        dataTypes.put(DYE_COLOR, "DyeColor");
+        dataTypes.put(DIFFICULTY, "Difficulty");
+        dataTypes.put(CROP_STATE, "CropState");
 
         dataTypesBackwards.put("String", STRING);
         dataTypesBackwards.put("Byte", BYTE);
@@ -64,6 +96,22 @@ public enum ConfigurationSectionAllowed {
         dataTypesBackwards.put("Location", LOCATION);
         dataTypesBackwards.put("Block", BLOCK);
         dataTypesBackwards.put("OfflinePlayer", OFFLINE_PLAYER);
+        dataTypesBackwards.put("World", WORLD);
+        dataTypesBackwards.put("WeatherType", WEATHER_TYPE);
+        dataTypesBackwards.put("TreeType", TREE_TYPE);
+        dataTypesBackwards.put("Particle", PARTICLE);
+        dataTypesBackwards.put("MusicInstrument", MUSIC_INSTRUMENT);
+        dataTypesBackwards.put("Material", MATERIAL);
+        dataTypesBackwards.put("Instrument", INSTRUMENT);
+        dataTypesBackwards.put("GameMode", GAMEMODE);
+        dataTypesBackwards.put("Fluid", FLUID);
+        dataTypesBackwards.put("EntityType", ENTITY_TYPE);
+        dataTypesBackwards.put("EntityEffect", ENTITY_EFFECT);
+        dataTypesBackwards.put("Enchantment", ENCHANTMENT);
+        dataTypesBackwards.put("Effect", EFFECT);
+        dataTypesBackwards.put("DyeColor", DYE_COLOR);
+        dataTypesBackwards.put("Difficulty", DIFFICULTY);
+        dataTypesBackwards.put("CropState", CROP_STATE);
     }
 
     /**
@@ -95,12 +143,52 @@ public enum ConfigurationSectionAllowed {
         return Optional.empty();
     }
 
+    public static final HashMap<String, ConfigurationSectionAllowed> SHAPE_NEEDS_CONVERSION = new HashMap<>();
+
+    static {
+        SHAPE_NEEDS_CONVERSION.put("Map<World,", ConfigurationSectionAllowed.WORLD);
+        SHAPE_NEEDS_CONVERSION.put("Map<WeatherType,", WEATHER_TYPE);
+        SHAPE_NEEDS_CONVERSION.put("Map<TreeType,", TREE_TYPE);
+        SHAPE_NEEDS_CONVERSION.put("Map<Particle,", PARTICLE);
+        SHAPE_NEEDS_CONVERSION.put("Map<MusicInstrument,", MUSIC_INSTRUMENT);
+        SHAPE_NEEDS_CONVERSION.put("Map<Material,", MATERIAL);
+        SHAPE_NEEDS_CONVERSION.put("Map<Instrument,", INSTRUMENT);
+        SHAPE_NEEDS_CONVERSION.put("Map<GameMode,", GAMEMODE);
+        SHAPE_NEEDS_CONVERSION.put("Map<Fluid,", FLUID);
+        SHAPE_NEEDS_CONVERSION.put("Map<EntityType,", ENTITY_TYPE);
+        SHAPE_NEEDS_CONVERSION.put("Map<EntityEffect,", ENTITY_EFFECT);
+        SHAPE_NEEDS_CONVERSION.put("Map<Enchantment,", ENCHANTMENT);
+        SHAPE_NEEDS_CONVERSION.put("Map<Effect,", EFFECT);
+        SHAPE_NEEDS_CONVERSION.put("Map<DyeColor,", DYE_COLOR);
+        SHAPE_NEEDS_CONVERSION.put("Map<Difficulty,", DIFFICULTY);
+        SHAPE_NEEDS_CONVERSION.put("Map<CropState,", CROP_STATE);
+    }
+
+    /**
+     * Returns the ConfigurationSectionAllowed for the given data type.
+     *
+     * @param dataType The data type to check.
+     * @return The ConfigurationSectionAllowed for the given data type. Empty if not found.
+     */
+    public static Optional<ConfigurationSectionAllowed> isShapeNeedsConversion(String dataType) {
+        for (String key : SHAPE_NEEDS_CONVERSION.keySet()) {
+            if (dataType.startsWith(key)) {
+                return Optional.of(SHAPE_NEEDS_CONVERSION.get(key));
+            }
+        }
+        return Optional.empty();
+    }
+
     public boolean needsCustomConversion() {
         return CUSTOM_NEEDS_CONVERSION.containsValue(this);
     }
 
     public boolean needsPrimitiveConversion() {
         return PRIMITIVE_NEEDS_CONVERSION.containsValue(this);
+    }
+
+    public boolean needsShapeConversion() {
+        return SHAPE_NEEDS_CONVERSION.containsValue(this);
     }
 
     public static final HashMap<String, ConfigurationSectionAllowed> PRIMITIVE_NEEDS_CONVERSION = new HashMap<>();
