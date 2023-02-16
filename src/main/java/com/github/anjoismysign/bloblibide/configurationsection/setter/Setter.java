@@ -2,7 +2,10 @@ package com.github.anjoismysign.bloblibide.configurationsection.setter;
 
 import com.github.anjoismysign.bloblibide.configurationsection.Iterables;
 import com.github.anjoismysign.bloblibide.entities.ObjectAttribute;
+import com.github.anjoismysign.bloblibide.libraries.DataTypeLib;
 import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
+
+import java.util.Optional;
 
 public class Setter {
 
@@ -25,7 +28,8 @@ public class Setter {
         String dataType = attribute.getDataType();
         String attributeName = attribute.getAttributeName();
         String pascalAttributeName = NamingConventions.toPascalCase(attributeName);
-        if (Iterables.isQuickIterable(dataType)) {
+        Optional<String> wrapper = DataTypeLib.primitiveToWrapper(dataType);
+        if (wrapper.isPresent() && Iterables.isQuickIterable(wrapper.get())) {
             return QuickIterableSetter.apply(configurationSectionVariableName, pascalAttributeName,
                     attributeName);
         }

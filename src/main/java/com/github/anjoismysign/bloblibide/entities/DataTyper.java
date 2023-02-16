@@ -2,6 +2,7 @@ package com.github.anjoismysign.bloblibide.entities;
 
 import com.github.anjoismysign.bloblibide.libraries.DataTypeLib;
 import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
+import com.github.anjoismysign.bloblibide.libraries.PanelLib;
 
 import java.util.*;
 
@@ -65,8 +66,10 @@ public class DataTyper extends HashMap<String, List<String>> {
      */
     public void parseDataType(String input) {
         String[] split = input.split(" ");
-        if (split.length != 2)
+        if (split.length != 2) {
+            PanelLib.showMessage("ERROR", "Invalid input: " + input, null);
             throw new IllegalArgumentException("Invalid input");
+        }
         String dataType = split[0];
         String[] names = split[1].split(",");
         if (names.length == 1)
@@ -103,6 +106,10 @@ public class DataTyper extends HashMap<String, List<String>> {
             String value = split[1].trim();
             String keyWrapper = DataTypeLib.getWrapper(key).orElse(key);
             mapKeys.add(keyWrapper);
+            if (value.startsWith("List<")) {
+                includesList = true;
+                value = value.substring(5, value.length() - 1);
+            }
             String valueWrapper = DataTypeLib.getWrapper(value).orElse(value);
             mapValues.add(valueWrapper);
             dataType = dataType.replace(key, keyWrapper);
@@ -234,6 +241,19 @@ public class DataTyper extends HashMap<String, List<String>> {
 
     public boolean containsDataTypeInMap(String dataType) {
         return mapKeys.contains(dataType) || mapValues.contains(dataType);
+//        boolean containsInKey = mapKeys.contains(dataType);
+//        boolean containsInValueAsList = false;
+//        for (String value : mapValues) {
+//            if (value.startsWith("List<")) {
+//                String generic = value.substring(5, value.length() - 1);
+//                if (generic.equals(dataType)) {
+//                    containsInValueAsList = true;
+//                    break;
+//                }
+//            }
+//        }
+//        boolean containsInValue = mapValues.contains(dataType);
+//        return containsInKey || containsInValue || containsInValueAsList;
     }
 
     public boolean containsDataTypeInList(String dataType) {

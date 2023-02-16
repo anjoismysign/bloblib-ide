@@ -9,7 +9,7 @@ public class MapKeyListValueSetter {
                                ConfigurationSectionAllowed keyAllowed, String value) {
         ConfigurationSectionAllowed valueAllowed = ConfigurationSectionAllowed.fromName(value);
         if (valueAllowed == null)
-            return "null; //TODO '" + dataType + "' is not supported. Implement it yourself.";
+            return "//TODO '" + dataType + "' is not supported. Implement it yourself.";
         if (!keyAllowed.needsShapeConversion()) {
             // key does not need shape conversion
             // since it's a Map, we use ConfigurationSectionLib methods

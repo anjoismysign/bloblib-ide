@@ -5,6 +5,6 @@ public class CustomQuickIterableGetter {
     public static String apply(String configurationSectionVariableName,
                                String pascalAttributeName, String dataType) {
         return "SerializationLib.deserialize" + dataType + "(" +
-                configurationSectionVariableName + ".get(\"" + pascalAttributeName + "\"));";
+                configurationSectionVariableName + ".getString(\"" + pascalAttributeName + "\"));";
     }
 }

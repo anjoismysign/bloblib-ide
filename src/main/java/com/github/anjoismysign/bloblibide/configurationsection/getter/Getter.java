@@ -2,7 +2,10 @@ package com.github.anjoismysign.bloblibide.configurationsection.getter;
 
 import com.github.anjoismysign.bloblibide.configurationsection.Iterables;
 import com.github.anjoismysign.bloblibide.entities.ObjectAttribute;
+import com.github.anjoismysign.bloblibide.libraries.DataTypeLib;
 import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
+
+import java.util.Optional;
 
 public class Getter {
 
@@ -27,7 +30,8 @@ public class Getter {
         String dataType = attribute.getDataType();
         String attributeName = attribute.getAttributeName();
         String pascalAttributeName = NamingConventions.toPascalCase(attributeName);
-        if (Iterables.isQuickIterable(dataType)) {
+        Optional<String> wrapper = DataTypeLib.primitiveToWrapper(dataType);
+        if (wrapper.isPresent() && Iterables.isQuickIterable(wrapper.get())) {
             return Iterables.primitivesGetMethods(attribute,
                     configurationSectionVariableName);
         }
@@ -49,6 +53,6 @@ public class Getter {
         }
         //it's shape
         return "SerializationLib.deserialize" + dataType + "(" +
-                configurationSectionVariableName + ".get(\"" + pascalAttributeName + "\"));";
+                configurationSectionVariableName + ".getString(\"" + pascalAttributeName + "\"));";
     }
 }

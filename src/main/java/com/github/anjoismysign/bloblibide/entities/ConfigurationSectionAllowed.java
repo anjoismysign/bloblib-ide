@@ -135,13 +135,29 @@ public enum ConfigurationSectionAllowed {
      * @return The ConfigurationSectionAllowed for the given data type. Empty if not found.
      */
     public static Optional<ConfigurationSectionAllowed> isPrimitiveNeedsConversion(String dataType) {
-        for (String key : PRIMITIVE_NEEDS_CONVERSION.keySet()) {
-            if (dataType.startsWith(key)) {
+        for (ConfigurationSectionAllowed key : PRIMITIVE_NEEDS_CONVERSION.values()) {
+            if (dataType.toUpperCase().startsWith(key.toString())) {
                 return Optional.of(PRIMITIVE_NEEDS_CONVERSION.get(key));
             }
         }
         return Optional.empty();
     }
+
+    public boolean hasSafeToStringConversion() {
+        return this == BYTE ||
+                this == SHORT ||
+                this == INTEGER ||
+                this == LONG ||
+                this == FLOAT ||
+                this == DOUBLE ||
+                this == BOOLEAN ||
+                this == CHARACTER ||
+                this == STRING ||
+                this == BIG_INTEGER ||
+                this == BIG_DECIMAL ||
+                this == UUID;
+    }
+
 
     public static final HashMap<String, ConfigurationSectionAllowed> SHAPE_NEEDS_CONVERSION = new HashMap<>();
 
@@ -171,8 +187,8 @@ public enum ConfigurationSectionAllowed {
      * @return The ConfigurationSectionAllowed for the given data type. Empty if not found.
      */
     public static Optional<ConfigurationSectionAllowed> isShapeNeedsConversion(String dataType) {
-        for (String key : SHAPE_NEEDS_CONVERSION.keySet()) {
-            if (dataType.startsWith(key)) {
+        for (ConfigurationSectionAllowed key : SHAPE_NEEDS_CONVERSION.values()) {
+            if (dataType.toUpperCase().startsWith(key.toString())) {
                 return Optional.of(SHAPE_NEEDS_CONVERSION.get(key));
             }
         }
@@ -212,8 +228,8 @@ public enum ConfigurationSectionAllowed {
      * @return The ConfigurationSectionAllowed for the given data type. Empty if not found.
      */
     public static Optional<ConfigurationSectionAllowed> isCustomNeedsConversion(String dataType) {
-        for (String key : CUSTOM_NEEDS_CONVERSION.keySet()) {
-            if (dataType.startsWith(key)) {
+        for (ConfigurationSectionAllowed key : CUSTOM_NEEDS_CONVERSION.values()) {
+            if (dataType.toUpperCase().startsWith(key.toString())) {
                 return Optional.of(CUSTOM_NEEDS_CONVERSION.get(key));
             }
         }

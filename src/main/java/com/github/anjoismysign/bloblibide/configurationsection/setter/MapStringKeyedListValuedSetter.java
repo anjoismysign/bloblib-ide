@@ -9,7 +9,7 @@ public class MapStringKeyedListValuedSetter {
                                String listType) {
         ConfigurationSectionAllowed valueAllowed = ConfigurationSectionAllowed.fromName(listType);
         if (valueAllowed == null)
-            return "null; //TODO '" + dataType + "' is not supported. Implement it yourself.";
+            return "//TODO '" + dataType + "' is not supported. Implement it yourself.";
         if (!valueAllowed.needsShapeConversion()) {
             // does not need shape conversion
             return "ConfigurationSectionLib.serialize" + listType + "ListMap(" +

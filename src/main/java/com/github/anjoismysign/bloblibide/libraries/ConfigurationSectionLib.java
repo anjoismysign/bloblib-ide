@@ -6,8 +6,20 @@ import com.github.anjoismysign.bloblibide.entities.ObjectAttribute;
 
 import java.util.Optional;
 
+/**
+ * @deprecated Use {@link com.github.anjoismysign.bloblibide.configurationsection.getter.Getter}
+ * and {@link com.github.anjoismysign.bloblibide.configurationsection.setter.Setter}
+ */
+@Deprecated
 public class ConfigurationSectionLib {
 
+    /**
+     * @param attribute                        The attribute to get the setter for
+     * @param configurationSectionVariableName The variable name of the ConfigurationSection
+     * @return The setter for the attribute
+     * @deprecated Use {@link com.github.anjoismysign.bloblibide.configurationsection.getter.Getter#apply(ObjectAttribute, String)}
+     */
+    @Deprecated
     public static String applySetMethods(ObjectAttribute attribute,
                                          String configurationSectionVariableName) {
         String dataType = attribute.getDataType();
@@ -107,7 +119,9 @@ public class ConfigurationSectionLib {
      * @param attribute                        Attribute to get
      * @param configurationSectionVariableName Variable name of the ConfigurationSection
      * @param function                         Function to append to
+     * @deprecated Use {@link com.github.anjoismysign.bloblibide.configurationsection.getter.Getter#getFromConfigurationSection(ObjectAttribute, String, StringBuilder)}
      */
+    @Deprecated
     public static void getFromConfigurationSection(ObjectAttribute attribute,
                                                    String configurationSectionVariableName,
                                                    StringBuilder function) {
@@ -202,7 +216,9 @@ public class ConfigurationSectionLib {
      * @param attribute                        Attribute to save
      * @param configurationSectionVariableName Variable name of the ConfigurationSection
      * @param saveToFile                       Function to append to
+     * @deprecated Use {@link com.github.anjoismysign.bloblibide.configurationsection.setter.Setter#saveToConfigurationSection(ObjectAttribute, String, StringBuilder)}
      */
+    @Deprecated
     public static void saveToConfigurationSection(ObjectAttribute attribute,
                                                   String configurationSectionVariableName,
                                                   StringBuilder saveToFile) {

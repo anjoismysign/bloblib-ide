@@ -49,6 +49,22 @@ public class DataTypeLib {
     }
 
     /**
+     * @param dataType The data type to check.
+     * @return Present if the data type is a primitive data type.
+     * If it's already a wrapper, will return itself.
+     * Empty if not a primitive data type nor a wrapper.
+     */
+    public static Optional<String> primitiveToWrapper(String dataType) {
+        if (primitiveToWrapper.containsKey(dataType)) {
+            return Optional.of(primitiveToWrapper.get(dataType));
+        }
+        if (primitiveToWrapper.containsValue(dataType)) {
+            return Optional.of(dataType);
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Will attempt to convert a primitive data type to its wrapper class.
      * If not a primitive data type, will return itself.
      *

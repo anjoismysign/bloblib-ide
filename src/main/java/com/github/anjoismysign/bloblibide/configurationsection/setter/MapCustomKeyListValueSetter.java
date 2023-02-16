@@ -14,9 +14,15 @@ public class MapCustomKeyListValueSetter {
         if (!value.needsShapeConversion()) {
             // key and value do not need shape conversion
             String camel = NamingConventions.toCamelCase(key.getDataType());
-            return "ConfigurationSectionLib.serialize" + listType + "ListMap(" +
-                    "MapLib." + camel + "toStringKeys(" + attributeName + "), " +
-                    configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+            if (key.hasSafeToStringConversion()) {
+                return "ConfigurationSectionLib.serialize" + listType + "ListMap(" +
+                        "MapLib.toStringKeys(" + attributeName + "), " +
+                        configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+            } else {
+                return "ConfigurationSectionLib.serialize" + listType + "ListMap(" +
+                        "MapLib." + camel + "toStringKeys(" + attributeName + "), " +
+                        configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+            }
 //            return "MapLib.to" + keyType + "Keys(ConfigurationSectionLib.serialize" +
 //                    listType + "ListMap(" +
 //                    attributeName + ", " + configurationSectionVariableName + ", \"" +
@@ -24,9 +30,15 @@ public class MapCustomKeyListValueSetter {
         }
         // value needs shape conversion
         String camel = NamingConventions.toCamelCase(key.getDataType());
-        return listType + "Shape.serialize" + listType + "ListMap(" +
-                "MapLib." + camel + "toStringKeys(" + attributeName + "), " +
-                configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+        if (key.hasSafeToStringConversion()) {
+            return listType + "Shape.serialize" + listType + "ListMap(" +
+                    "MapLib.toStringKeys(" + attributeName + "), " +
+                    configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+        } else {
+            return listType + "Shape.serialize" + listType + "ListMap(" +
+                    "MapLib." + camel + "toStringKeys(" + attributeName + "), " +
+                    configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+        }
 //        return "MapLib.to" + keyType + "Keys(" + listType + "Shape.serialize" + listType + "ListMap(" +
 //                attributeName + ", " + configurationSectionVariableName + ", \"" +
 //                pascalAttributeName + "\"));";

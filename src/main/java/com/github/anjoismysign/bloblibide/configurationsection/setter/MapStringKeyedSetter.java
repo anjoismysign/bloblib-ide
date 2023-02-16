@@ -16,7 +16,7 @@ public class MapStringKeyedSetter {
         }
         ConfigurationSectionAllowed allowed = ConfigurationSectionAllowed.fromName(dataType);
         if (allowed == null) {
-            return "null; //TODO '" + dataType + "' is not supported. Implement it yourself.";
+            return "//TODO '" + dataType + "' is not supported. Implement it yourself.";
         }
         if (!allowed.needsShapeConversion()) {
             // does not need shape conversion

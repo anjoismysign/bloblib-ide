@@ -1,6 +1,7 @@
 package com.github.anjoismysign.bloblibide.configurationsection.setter;
 
 import com.github.anjoismysign.bloblibide.entities.ConfigurationSectionAllowed;
+import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
 
 public class MapKeyValueSetter {
 
@@ -9,7 +10,7 @@ public class MapKeyValueSetter {
                                String key, String value) {
         ConfigurationSectionAllowed keyAllowed = ConfigurationSectionAllowed.fromName(key);
         if (keyAllowed == null)
-            return "null; //TODO '" + dataType + "' is not supported. Implement it yourself.";
+            return "//TODO '" + dataType + "' is not supported. Implement it yourself.";
         if (value.startsWith("List<")) {
             value = value.replace("List<", "")
                     .replace(">", "");
@@ -19,7 +20,7 @@ public class MapKeyValueSetter {
         }
         ConfigurationSectionAllowed valueAllowed = ConfigurationSectionAllowed.fromName(value);
         if (valueAllowed == null)
-            return "null; //TODO '" + dataType + "' is not supported. Implement it yourself.";
+            return "//TODO '" + dataType + "' is not supported. Implement it yourself.";
         //assert valueAllowed is quick supported and not inside a list
         if (!keyAllowed.needsShapeConversion()) {
             return noShapeConversion(dataType, configurationSectionVariableName,
@@ -32,20 +33,27 @@ public class MapKeyValueSetter {
 
     private static String noShapeConversion(String dataType, String configurationSectionVariableName,
                                             String pascalAttributeName, String attributeName,
-                                            ConfigurationSectionAllowed keyAllowed, String value) {
+                                            ConfigurationSectionAllowed key, String value) {
         ConfigurationSectionAllowed valueAllowed = ConfigurationSectionAllowed.fromName(value);
         if (valueAllowed == null)
-            return "null; //TODO '" + dataType + "' is not supported. Implement it yourself.";
+            return "//TODO '" + dataType + "' is not supported. Implement it yourself.";
         String listType = valueAllowed.getDataType();
-        String keyType = keyAllowed.getDataType();
+        String camel = NamingConventions.toCamelCase(key.getDataType());
         if (!valueAllowed.needsShapeConversion()) {
             // key uses MapLib.
             // value uses ConfigurationSectionLib.
             // value is not a list
             // -> since it's a Map, we use ConfigurationSectionLib methods
-            return "ConfigurationSectionLib.serialize" + listType + "Map(MapLib.toStringKeys("
-                    + attributeName + "), " + configurationSectionVariableName
-                    + ", \"" + pascalAttributeName + "\");";
+            if (key.hasSafeToStringConversion()) {
+                return "ConfigurationSectionLib.serialize" + listType + "Map(MapLib.toStringKeys("
+                        + attributeName + "), " + configurationSectionVariableName
+                        + ", \"" + pascalAttributeName + "\");";
+            } else {
+                return "ConfigurationSectionLib.serialize" + listType + "Map(MapLib." +
+                        camel + "toStringKeys("
+                        + attributeName + "), " + configurationSectionVariableName
+                        + ", \"" + pascalAttributeName + "\");";
+            }
 
 //            return "MapLib.to" + keyType + "Keys(ConfigurationSectionLib.serialize" +
 //                    listType + "Map(" +
@@ -54,8 +62,14 @@ public class MapKeyValueSetter {
         }
         // key uses MapLib.
         // value needs shape conversion
-        return listType + "Shape.serialize" + listType + "Map(MapLib.toStringKeys(" + attributeName + "), " + configurationSectionVariableName
-                + ", \"" + pascalAttributeName + "\");";
+        if (key.hasSafeToStringConversion()) {
+            return listType + "Shape.serialize" + listType + "Map(MapLib.toStringKeys(" + attributeName + "), " + configurationSectionVariableName
+                    + ", \"" + pascalAttributeName + "\");";
+        } else {
+            return listType + "Shape.serialize" + listType + "Map(MapLib." + camel +
+                    "toStringKeys(" + attributeName + "), " + configurationSectionVariableName
+                    + ", \"" + pascalAttributeName + "\");";
+        }
 
 //        return "MapLib.to" + keyType + "Keys(" + listType + "Shape.serialize" + listType + "Map(" +
 //                attributeName + ", " + configurationSectionVariableName + ", \"" +
@@ -67,7 +81,7 @@ public class MapKeyValueSetter {
                                           ConfigurationSectionAllowed keyAllowed, String value) {
         ConfigurationSectionAllowed valueAllowed = ConfigurationSectionAllowed.fromName(value);
         if (valueAllowed == null)
-            return "null; //TODO '" + dataType + "' is not supported. Implement it yourself.";
+            return "//TODO '" + dataType + "' is not supported. Implement it yourself.";
         String listType = valueAllowed.getDataType();
         String keyType = keyAllowed.getDataType();
         if (!valueAllowed.needsShapeConversion()) {

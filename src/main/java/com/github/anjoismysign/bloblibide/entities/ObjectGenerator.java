@@ -22,6 +22,60 @@ public class ObjectGenerator {
     private final DefaultAttributes defaultAttributes;
     private final List<String> defaultFunctions;
     private final DataTyper finalDataTyper;
+    private final boolean isCarrier;
+
+    /**
+     * Will create a new ObjectGenerator from AnActionEvent.
+     *
+     * @param event            AnActionEvent
+     * @param dynamicDataTyper If true, will ask for data types individually.
+     *                         If false, will ask a raw string and parse it.
+     *                         Raw string is just splitting data types by
+     *                         a semicolon ';'. Then each DataType is read
+     *                         normally.
+     * @return Should always check if it is empty. It is guaranteed to work at current time.
+     */
+    public static Optional<ObjectGenerator> dataCarrierFromAnActionInsideNewGroup(AnActionEvent event, boolean dynamicDataTyper) {
+        Optional<PsiDirectory> selectedPackageOptional = PsiDirectoryLib.getSelectedPackage(event);
+        if (selectedPackageOptional.isEmpty())
+            return Optional.empty();
+        final Project project = event.getProject();
+        final PsiDirectory selectedDirectory = selectedPackageOptional.get();
+        Uber<String> input = new Uber<>("ClassNameNotFound");
+        input.talk(PanelLib.requestString("Class name", "Enter the class/object name below", "Please provide a class name. \n" +
+                "Recursion will be used until then.", project));
+        input.talk(NamingConventions.toPascalCase(input.thanks()));
+        String className = input.thanks();
+        DataTyper dataTyper;
+        if (dynamicDataTyper) {
+            dataTyper = new DataTyper();
+            AlgorithmLib.dynamicRun(() -> {
+                String dataType = PanelLib.requestString("Enter Attribute/s", "Example 1: 'String name,lastName'\n" +
+                                "Example 2: 'boolean isDeceased'\n" +
+                                "Example 3: 'HashMap<String,Integer> records' (notice to not leave a ' ' space between\n" +
+                                "the comma of the key and value of the HashMap)",
+                        "Provide valid attribute/s. Recursion will be used until then.", project);
+                dataTyper.parseDataType(dataType);
+            }, "Enter Attribute", "Do you wish to add another attribute?", project);
+        } else {
+            String raw = PanelLib.requestString("Enter Attribute/s", "Example 1: 'String name,lastName'\n" +
+                    "Example 2: 'boolean isVaccined,impoverished ; String pharmaceutical'\n" +
+                    "Example 4: 'String name,lastname;int age;double income,expenses'", "Invalid input. Recursion will be used until then.", project);
+            dataTyper = DataTyper.fromRaw(raw);
+        }
+        ObjectGenerator classGenerator = new ObjectGenerator(selectedDirectory, className, dataTyper, true);
+        if (dataTyper.includesList())
+            classGenerator.getImportCollection().add("java.util.List");
+        if (dataTyper.includesMap())
+            classGenerator.getImportCollection().add("java.util.Map");
+        if (dataTyper.containsDataType("BigInteger"))
+            classGenerator.getImportCollection().add("java.math.BigInteger");
+        if (dataTyper.containsDataType("BigDecimal"))
+            classGenerator.getImportCollection().add("java.math.BigDecimal");
+        if (dataTyper.containsDataType("UUID"))
+            classGenerator.getImportCollection().add("java.util.UUID");
+        return Optional.of(classGenerator);
+    }
 
     /**
      * Will create a new ObjectGenerator from AnActionEvent.
@@ -62,7 +116,7 @@ public class ObjectGenerator {
                     "Example 4: 'String name,lastname;int age;double income,expenses'", "Invalid input. Recursion will be used until then.", project);
             dataTyper = DataTyper.fromRaw(raw);
         }
-        ObjectGenerator classGenerator = new ObjectGenerator(selectedDirectory, className, dataTyper);
+        ObjectGenerator classGenerator = new ObjectGenerator(selectedDirectory, className, dataTyper, false);
         if (dataTyper.includesList())
             classGenerator.getImportCollection().add("java.util.List");
         if (dataTyper.includesMap())
@@ -88,10 +142,11 @@ public class ObjectGenerator {
      */
     public ObjectGenerator(PsiDirectory selectedDirectory,
                            String className,
-                           DataTyper dataTyper) {
+                           DataTyper dataTyper, boolean isCarrier) {
         this.selectedDirectory = selectedDirectory;
         this.className = className;
         this.dataTyper = dataTyper;
+        this.isCarrier = isCarrier;
         importCollection = new ImportCollection();
         classDeclaration = name -> "public class " + name + " {";
         defaultAttributes = new DefaultAttributes();
@@ -107,13 +162,16 @@ public class ObjectGenerator {
         builder.append(getImportCollection().importPackages());
         builder.append(getClassDeclaration().apply(getClassName())).append("\n\n");
         getDefaultAttributes().encapsulate().forEach(builder::append);
-        getDataTyper().encapsulate().forEach(builder::append);
+        getDataTyper().encapsulate(isCarrier).forEach(builder::append);
         getFinalDataTyper().encapsulate(true).forEach(builder::append);
         builder.append("\n");
+        String dataTyperConstructorParameters = getDataTyper().getConstructorParameters();
         String finalConstructorParameters = getFinalDataTyper().getConstructorParameters();
-        if (finalConstructorParameters.length() != 0)
-            finalConstructorParameters = ", " + finalConstructorParameters;
-        builder.append("public ").append(getClassName()).append("(").append(getDataTyper().getConstructorParameters())
+        if (finalConstructorParameters.length() != 0) {
+            if (dataTyperConstructorParameters.length() != 0)
+                finalConstructorParameters = ", " + finalConstructorParameters;
+        }
+        builder.append("public ").append(getClassName()).append("(").append(dataTyperConstructorParameters)
                 .append(finalConstructorParameters).append(") {\n");
         builder.append(getDataTyper().getConstructorBody());
         builder.append(getFinalDataTyper().getConstructorBody());
@@ -122,8 +180,13 @@ public class ObjectGenerator {
         getDefaultAttributes().forEach(attribute -> builder.append(attribute.getter()).append(attribute.setter()));
         getFinalDataTyper().listAttributes().forEach(attribute ->
                 builder.append(attribute.getter()));
-        getDataTyper().listAttributes().forEach(attribute ->
-                builder.append(attribute.getter()).append(attribute.setter()));
+        if (isCarrier) {
+            getDataTyper().listAttributes().forEach(attribute ->
+                    builder.append(attribute.getter()));
+        } else {
+            getDataTyper().listAttributes().forEach(attribute ->
+                    builder.append(attribute.getter()).append(attribute.setter()));
+        }
         getDefaultFunctions().forEach(string -> builder.append(string).append("\n"));
         builder.deleteCharAt(builder.length() - 1);
         builder.append("}");
