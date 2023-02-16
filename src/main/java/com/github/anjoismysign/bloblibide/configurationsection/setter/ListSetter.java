@@ -22,7 +22,7 @@ public class ListSetter {
             ConfigurationSectionAllowed allowed = optional.get();
             dataType = allowed.getDataType();
             StringBuilder function = new StringBuilder();
-            function.append("ConfigurationSectionLib.deserialize")
+            function.append("ConfigurationSectionLib.serialize")
                     .append(dataType).append("List(").append(configurationSectionVariableName)
                     .append(", \"").append(pascalAttributeName).append("\");\n");
         }
@@ -30,7 +30,7 @@ public class ListSetter {
         if (optional.isPresent()) {
             ConfigurationSectionAllowed allowed = optional.get();
             dataType = allowed.getDataType();
-            return dataType + "Shape.deserialize" + dataType + "List(" +
+            return dataType + "Shape.serialize" + dataType + "List(" +
                     configurationSectionVariableName + ", \"" +
                     pascalAttributeName + "\");";
         }

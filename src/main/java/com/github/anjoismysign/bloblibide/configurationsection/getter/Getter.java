@@ -1,10 +1,11 @@
-package com.github.anjoismysign.bloblibide.configurationsection.setter;
+package com.github.anjoismysign.bloblibide.configurationsection.getter;
 
 import com.github.anjoismysign.bloblibide.configurationsection.Iterables;
+import com.github.anjoismysign.bloblibide.configurationsection.setter.*;
 import com.github.anjoismysign.bloblibide.entities.ObjectAttribute;
 import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
 
-public class Setter {
+public class Getter {
 
     public static String apply(ObjectAttribute attribute,
                                String configurationSectionVariableName) {
@@ -32,7 +33,7 @@ public class Setter {
                     pascalAttributeName, attributeName);
         }
         //it's shape
-        return "SerializationLib.serialize" + dataType + "(" +
+        return "SerializationLib.deserialize" + dataType + "(" +
                 configurationSectionVariableName + ".get(\"" + pascalAttributeName + "\"));";
     }
 }
