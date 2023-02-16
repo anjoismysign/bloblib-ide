@@ -2,7 +2,7 @@ package com.github.anjoismysign.bloblibide.configurationsection.setter;
 
 import com.github.anjoismysign.bloblibide.entities.ConfigurationSectionAllowed;
 
-public class MapStringKeyedListValued {
+public class MapStringKeyedListValuedSetter {
 
     public static String apply(String dataType, String configurationSectionVariableName,
                                String pascalAttributeName, String attributeName,

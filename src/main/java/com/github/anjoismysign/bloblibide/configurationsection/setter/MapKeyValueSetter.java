@@ -2,7 +2,7 @@ package com.github.anjoismysign.bloblibide.configurationsection.setter;
 
 import com.github.anjoismysign.bloblibide.entities.ConfigurationSectionAllowed;
 
-public class MapKeyValue {
+public class MapKeyValueSetter {
 
     public static String apply(String dataType, String configurationSectionVariableName,
                                String pascalAttributeName, String attributeName,
@@ -13,7 +13,7 @@ public class MapKeyValue {
         if (value.startsWith("List<")) {
             value = value.replace("List<", "")
                     .replace(">", "");
-            return MapKeyListValue.
+            return MapKeyListValueSetter.
                     apply(dataType, configurationSectionVariableName,
                             pascalAttributeName, attributeName, keyAllowed, value);
         }

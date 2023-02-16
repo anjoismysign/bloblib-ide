@@ -1,8 +1,8 @@
-package com.github.anjoismysign.bloblibide.configurationsection.setter;
+package com.github.anjoismysign.bloblibide.configurationsection.getter;
 
 import com.github.anjoismysign.bloblibide.entities.ConfigurationSectionAllowed;
 
-public class MapShapeKeyListValue {
+public class MapShapeKeyListValueGetter {
 
     public static String apply(String configurationSectionVariableName,
                                String pascalAttributeName, String attributeName,

@@ -16,8 +16,8 @@ public class Setter {
                     attributeName);
         }
         if (Iterables.isCustomQuickIterable(dataType)) {
-            return CustomQuickIterableSetter.apply(configurationSectionVariableName,
-                    pascalAttributeName, attributeName);
+            return CustomQuickIterableSetter.apply(attributeName,
+                    configurationSectionVariableName, pascalAttributeName);
         }
         if (dataType.startsWith("Map<String, ")) {
             return MapStringKeyedSetter.apply(dataType, configurationSectionVariableName,
@@ -32,7 +32,7 @@ public class Setter {
                     pascalAttributeName, attributeName);
         }
         //it's shape
-        return "SerializationLib.serialize" + dataType + "(" +
+        return "SerializationLib.serialize(" +
                 configurationSectionVariableName + ".get(\"" + pascalAttributeName + "\"));";
     }
 }

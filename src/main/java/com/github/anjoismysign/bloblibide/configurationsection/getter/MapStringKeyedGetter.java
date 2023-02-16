@@ -1,8 +1,8 @@
-package com.github.anjoismysign.bloblibide.configurationsection.setter;
+package com.github.anjoismysign.bloblibide.configurationsection.getter;
 
 import com.github.anjoismysign.bloblibide.entities.ConfigurationSectionAllowed;
 
-public class MapStringKeyedSetter {
+public class MapStringKeyedGetter {
 
     public static String apply(String dataType, String configurationSectionVariableName,
                                String pascalAttributeName, String attributeName) {
@@ -11,7 +11,7 @@ public class MapStringKeyedSetter {
         if (valueDataType.startsWith("List<")) {
             valueDataType = valueDataType.replace("List<", "");
             valueDataType = valueDataType.replace(">", "");
-            return MapStringKeyedListValuedSetter.apply(dataType, configurationSectionVariableName,
+            return MapStringKeyedListValuedGetter.apply(dataType, configurationSectionVariableName,
                     pascalAttributeName, attributeName, valueDataType);
         }
         ConfigurationSectionAllowed allowed = ConfigurationSectionAllowed.fromName(dataType);
@@ -20,12 +20,12 @@ public class MapStringKeyedSetter {
         }
         if (!allowed.needsShapeConversion()) {
             // does not need shape conversion
-            return "ConfigurationSectionLib.serialize" + valueDataType + "Map(" +
+            return "ConfigurationSectionLib.deserialize" + valueDataType + "Map(" +
                     attributeName + ", " + configurationSectionVariableName + ", \"" +
                     pascalAttributeName + "\");";
         }
         // does need custom conversion
-        return valueDataType + "Shape.serialize" + valueDataType + "Map(" +
+        return valueDataType + "Shape.deserialize" + valueDataType + "Map(" +
                 attributeName + ", " + configurationSectionVariableName + ", \"" +
                 pascalAttributeName + "\");";
     }

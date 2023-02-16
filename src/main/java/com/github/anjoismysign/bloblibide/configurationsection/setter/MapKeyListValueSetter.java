@@ -2,7 +2,7 @@ package com.github.anjoismysign.bloblibide.configurationsection.setter;
 
 import com.github.anjoismysign.bloblibide.entities.ConfigurationSectionAllowed;
 
-public class MapKeyListValue {
+public class MapKeyListValueSetter {
 
     public static String apply(String dataType, String configurationSectionVariableName,
                                String pascalAttributeName, String attributeName,
@@ -13,11 +13,11 @@ public class MapKeyListValue {
         if (!keyAllowed.needsShapeConversion()) {
             // key does not need shape conversion
             // since it's a Map, we use ConfigurationSectionLib methods
-            return MapCustomKeyListValue.apply(configurationSectionVariableName,
+            return MapCustomKeyListValueSetter.apply(configurationSectionVariableName,
                     pascalAttributeName, attributeName, keyAllowed, valueAllowed);
         }
         // key needs shape conversion
-        return MapShapeKeyListValue.apply(configurationSectionVariableName,
+        return MapShapeKeyListValueSetter.apply(configurationSectionVariableName,
                 pascalAttributeName, attributeName, keyAllowed, valueAllowed);
     }
 }

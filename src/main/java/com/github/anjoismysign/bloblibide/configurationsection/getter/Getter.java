@@ -1,7 +1,8 @@
 package com.github.anjoismysign.bloblibide.configurationsection.getter;
 
 import com.github.anjoismysign.bloblibide.configurationsection.Iterables;
-import com.github.anjoismysign.bloblibide.configurationsection.setter.*;
+import com.github.anjoismysign.bloblibide.configurationsection.setter.ListSetter;
+import com.github.anjoismysign.bloblibide.configurationsection.setter.MapSetter;
 import com.github.anjoismysign.bloblibide.entities.ObjectAttribute;
 import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
 
@@ -13,15 +14,15 @@ public class Getter {
         String attributeName = attribute.getAttributeName();
         String pascalAttributeName = NamingConventions.toPascalCase(attributeName);
         if (Iterables.isQuickIterable(dataType)) {
-            return QuickIterableSetter.apply(configurationSectionVariableName, pascalAttributeName,
-                    attributeName);
+            return Iterables.primitivesGetMethods(attribute,
+                    configurationSectionVariableName);
         }
         if (Iterables.isCustomQuickIterable(dataType)) {
-            return CustomQuickIterableSetter.apply(configurationSectionVariableName,
-                    pascalAttributeName, attributeName);
+            return CustomQuickIterableGetter.apply(configurationSectionVariableName,
+                    pascalAttributeName, dataType);
         }
         if (dataType.startsWith("Map<String, ")) {
-            return MapStringKeyedSetter.apply(dataType, configurationSectionVariableName,
+            return MapStringKeyedGetter.apply(dataType, configurationSectionVariableName,
                     pascalAttributeName, attributeName);
         }
         if (dataType.startsWith("Map<")) {

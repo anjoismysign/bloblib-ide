@@ -8,7 +8,7 @@ public class MapSetter {
         String[] split = mapDataType.split(",");
         String key = split[0].trim();
         String value = split[1].trim();
-        return MapKeyValue.apply(dataType, configurationSectionVariableName,
+        return MapKeyValueSetter.apply(dataType, configurationSectionVariableName,
                 pascalAttributeName, attributeName, key, value);
     }
 }
