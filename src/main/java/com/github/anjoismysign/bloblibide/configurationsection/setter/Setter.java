@@ -6,8 +6,22 @@ import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
 
 public class Setter {
 
-    public static String apply(ObjectAttribute attribute,
-                               String configurationSectionVariableName) {
+    public static void saveToConfigurationSection(ObjectAttribute attribute,
+                                                  String configurationSectionVariableName,
+                                                  StringBuilder saveToFile) {
+        String applySetMethods = apply(attribute, configurationSectionVariableName);
+        saveToFile.append("    ").append(applySetMethods).append("\n");
+    }
+
+    public static String apply(ObjectAttribute attribute, String configurationSectionVariableName) {
+        String setter = setter(attribute, configurationSectionVariableName);
+        if (!setter.endsWith(";"))
+            setter = setter + ";";
+        return setter;
+    }
+
+    private static String setter(ObjectAttribute attribute,
+                                 String configurationSectionVariableName) {
         String dataType = attribute.getDataType();
         String attributeName = attribute.getAttributeName();
         String pascalAttributeName = NamingConventions.toPascalCase(attributeName);

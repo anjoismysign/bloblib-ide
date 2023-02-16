@@ -1,5 +1,7 @@
 package com.github.anjoismysign.bloblibide.actions;
 
+import com.github.anjoismysign.bloblibide.configurationsection.getter.Getter;
+import com.github.anjoismysign.bloblibide.configurationsection.setter.Setter;
 import com.github.anjoismysign.bloblibide.entities.DataTyper;
 import com.github.anjoismysign.bloblibide.entities.ImportCollection;
 import com.github.anjoismysign.bloblibide.entities.ObjectAttribute;
@@ -23,6 +25,10 @@ public class BlobObjectAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
+        versionTwo(event);
+    }
+
+    public static void versionTwo(AnActionEvent event) {
         Optional<ObjectGenerator> optional = ObjectGenerator.fromAnActionInsideNewGroup(event, true);
         if (optional.isEmpty())
             return;
@@ -57,8 +63,7 @@ public class BlobObjectAction extends AnAction {
         saveToFile.append("@Override\n").append("public File saveToFile(File directory){ \n")
                 .append("    File file = new File(directory + \"/\" + getKey() + \".yml\");\n")
                 .append("    YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);\n");
-        attributes.forEach(attribute -> ConfigurationSectionLib.saveToConfigurationSection(attribute,
-                "yamlConfiguration", saveToFile));
+        attributes.forEach(attribute -> Setter.saveToConfigurationSection(attribute, "yamlConfiguration", saveToFile));
         saveToFile.append("    try {\n").append("            yamlConfiguration.save(file);\n")
                 .append("    } catch (Exception exception) {\n")
                 .append("        exception.printStackTrace();\n")
@@ -70,8 +75,7 @@ public class BlobObjectAction extends AnAction {
         loadFromFile.append("public static ").append(objectGenerator.getClassName()).append(" fromFile(File file){ \n")
                 .append("    String fileName = file.getName();\n")
                 .append("    YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);");
-        attributes.forEach(attribute -> ConfigurationSectionLib.getFromConfigurationSection(attribute,
-                "yamlConfiguration", loadFromFile));
+        attributes.forEach(attribute -> Getter.getFromConfigurationSection(attribute, "yamlConfiguration", loadFromFile));
         loadFromFile.append("    String key = FilenameUtils.removeExtension(fileName);\n");
         loadFromFile.append("    return new ").append(objectGenerator.getClassName()).append("(");
         attributes.forEach(attribute -> loadFromFile.append(attribute.getAttributeName()).append(", "));

@@ -13,7 +13,7 @@ public class MapCustomKeyListValueSetter {
 //        String keyType = key.getDataType();
         if (!value.needsShapeConversion()) {
             // key and value do not need shape conversion
-            String camel = NamingConventions.toCamelCase(listType);
+            String camel = NamingConventions.toCamelCase(key.getDataType());
             return "ConfigurationSectionLib.serialize" + listType + "ListMap(" +
                     "MapLib." + camel + "toStringKeys(" + attributeName + "), " +
                     configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
@@ -23,7 +23,7 @@ public class MapCustomKeyListValueSetter {
 //                    pascalAttributeName + "\"));";
         }
         // value needs shape conversion
-        String camel = NamingConventions.toCamelCase(listType);
+        String camel = NamingConventions.toCamelCase(key.getDataType());
         return listType + "Shape.serialize" + listType + "ListMap(" +
                 "MapLib." + camel + "toStringKeys(" + attributeName + "), " +
                 configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
