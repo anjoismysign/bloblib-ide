@@ -11,7 +11,6 @@ public class ListSetter {
         String dataType = originalDataType.replace("List<", "");
         Optional<ConfigurationSectionAllowed> optional = ConfigurationSectionAllowed.isPrimitiveNeedsConversion(dataType);
         if (optional.isPresent()) {
-            ConfigurationSectionAllowed allowed = optional.get();
             return configurationSectionVariableName + ".set(\"" +
                     pascalAttributeName + "\", " +
                     attributeName + ");";
@@ -21,12 +20,11 @@ public class ListSetter {
         if (optional.isPresent()) {
             ConfigurationSectionAllowed allowed = optional.get();
             dataType = allowed.getDataType();
-            StringBuilder function = new StringBuilder();
-            function.append("ConfigurationSectionLib.serialize")
-                    .append(dataType).append("List(").append(attributeName)
-                    .append(", ")
-                    .append(configurationSectionVariableName)
-                    .append(", \"").append(pascalAttributeName).append("\");\n");
+
+            return "ConfigurationSectionLib.serialize" + dataType + "List(" +
+                    attributeName + ", " +
+                    configurationSectionVariableName + ", \"" +
+                    pascalAttributeName + "\");";
         }
         optional = ConfigurationSectionAllowed.isShapeNeedsConversion(dataType);
         if (optional.isPresent()) {

@@ -43,16 +43,23 @@ public class MapKeyValueSetter {
             // value uses ConfigurationSectionLib.
             // value is not a list
             // -> since it's a Map, we use ConfigurationSectionLib methods
-            return "MapLib.to" + keyType + "Keys(ConfigurationSectionLib.serialize" +
-                    listType + "Map(" +
-                    attributeName + ", " + configurationSectionVariableName + ", \"" +
-                    pascalAttributeName + "\"));";
+            return "ConfigurationSectionLib.serialize" + listType + "Map(MapLib.to" +
+                    keyType + "Keys(" + attributeName + "), " + configurationSectionVariableName
+                    + ", \"" + pascalAttributeName + "\");";
+
+//            return "MapLib.to" + keyType + "Keys(ConfigurationSectionLib.serialize" +
+//                    listType + "Map(" +
+//                    attributeName + ", " + configurationSectionVariableName + ", \"" +
+//                    pascalAttributeName + "\"));";
         }
         // key uses MapLib.
         // value needs shape conversion
-        return "MapLib.to" + keyType + "Keys(" + listType + "Shape.serialize" + listType + "Map(" +
-                attributeName + ", " + configurationSectionVariableName + ", \"" +
-                pascalAttributeName + "\"));";
+        return listType + "Shape.serialize" + listType + "Map(MapLib.to" + keyType + "Keys(" + attributeName + "), " + configurationSectionVariableName
+                + ", \"" + pascalAttributeName + "\");";
+
+//        return "MapLib.to" + keyType + "Keys(" + listType + "Shape.serialize" + listType + "Map(" +
+//                attributeName + ", " + configurationSectionVariableName + ", \"" +
+//                pascalAttributeName + "\"));";
     }
 
     private static String shapeConversion(String dataType, String configurationSectionVariableName,
@@ -68,15 +75,23 @@ public class MapKeyValueSetter {
             // value uses ConfigurationSectionLib.
             // value is not a list
             // -> since it's a Map, we use ConfigurationSectionLib methods
-            return keyType + "Shape.to" + keyType + "Keys(ConfigurationSectionLib.serialize" +
-                    listType + "Map(" +
-                    attributeName + ", " + configurationSectionVariableName + ", \"" +
-                    pascalAttributeName + "\"));";
+            return "ConfigurationSectionLib.serialize" + listType + "Map(" + keyType + "Shape.to" +
+                    keyType + "Keys(" + attributeName + "), " + configurationSectionVariableName
+                    + ", \"" + pascalAttributeName + "\");";
+
+//            return keyType + "Shape.to" + keyType + "Keys(ConfigurationSectionLib.serialize" +
+//                    listType + "Map(" +
+//                    attributeName + ", " + configurationSectionVariableName + ", \"" +
+//                    pascalAttributeName + "\"));";
         }
         // key uses ShapeConversion.
         // value needs shape conversion
-        return keyType + "Shape.to" + keyType + "Keys(" + listType + "Shape.serialize" + listType + "Map(" +
-                attributeName + ", " + configurationSectionVariableName + ", \"" +
-                pascalAttributeName + "\"));";
+        return listType + "Shape.serialize" + listType + "Map(" + keyType + "Shape.to" + keyType
+                + "Keys(" + attributeName + "), " + configurationSectionVariableName
+                + ", \"" + pascalAttributeName + "\");";
+
+//        return keyType + "Shape.to" + keyType + "Keys(" + listType + "Shape.serialize" +
+//                listType + "Map(" + attributeName + ", " + configurationSectionVariableName +
+//                ", \"" + pascalAttributeName + "\"));";
     }
 }

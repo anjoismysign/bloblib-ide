@@ -13,15 +13,21 @@ public class MapShapeKeyListValueSetter {
         if (!valueAllowed.needsShapeConversion()) {
             // key needs shape conversion, but
             // value does not need shape conversion
-            return keyType + "Shape.to" + keyType + "Keys(ConfigurationSectionLib.serialize" +
-                    listType + "ListMap(" +
-                    attributeName + ", " + configurationSectionVariableName + ", \"" +
-                    pascalAttributeName + "\"));";
+            return "ConfigurationSectionLib.serialize" + listType + "ListMap(" +
+                    keyType + "Shape.toStringKeys(" + attributeName + "), " +
+                    configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+//            return keyType + "Shape.to" + keyType + "Keys(ConfigurationSectionLib.serialize" +
+//                    listType + "ListMap(" +
+//                    attributeName + ", " + configurationSectionVariableName + ", \"" +
+//                    pascalAttributeName + "\"));";
         }
         // key needs shape conversion,
         // value needs shape conversion
-        return keyType + "Shape.to" + keyType + "Keys(" + listType + "Shape.serialize" + listType + "ListMap(" +
-                attributeName + ", " + configurationSectionVariableName + ", \"" +
-                pascalAttributeName + "\"));";
+        return listType + "Shape.serialize" + listType + "ListMap(" +
+                keyType + "Shape.toStringKeys(" + attributeName + "), " +
+                configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+//        return keyType + "Shape.to" + keyType + "Keys(" + listType + "Shape.serialize" + listType + "ListMap(" +
+//                attributeName + ", " + configurationSectionVariableName + ", \"" +
+//                pascalAttributeName + "\"));";
     }
 }

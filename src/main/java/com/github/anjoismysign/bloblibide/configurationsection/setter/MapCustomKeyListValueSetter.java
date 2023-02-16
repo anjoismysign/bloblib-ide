@@ -1,6 +1,7 @@
 package com.github.anjoismysign.bloblibide.configurationsection.setter;
 
 import com.github.anjoismysign.bloblibide.entities.ConfigurationSectionAllowed;
+import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
 
 public class MapCustomKeyListValueSetter {
 
@@ -9,17 +10,25 @@ public class MapCustomKeyListValueSetter {
                                ConfigurationSectionAllowed key,
                                ConfigurationSectionAllowed value) {
         String listType = value.getDataType();
-        String keyType = key.getDataType();
+//        String keyType = key.getDataType();
         if (!value.needsShapeConversion()) {
             // key and value do not need shape conversion
-            return "MapLib.to" + keyType + "Keys(ConfigurationSectionLib.serialize" +
-                    listType + "ListMap(" +
-                    attributeName + ", " + configurationSectionVariableName + ", \"" +
-                    pascalAttributeName + "\"));";
+            String camel = NamingConventions.toCamelCase(listType);
+            return "ConfigurationSectionLib.serialize" + listType + "ListMap(" +
+                    "MapLib." + camel + "toStringKeys(" + attributeName + "), " +
+                    configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+//            return "MapLib.to" + keyType + "Keys(ConfigurationSectionLib.serialize" +
+//                    listType + "ListMap(" +
+//                    attributeName + ", " + configurationSectionVariableName + ", \"" +
+//                    pascalAttributeName + "\"));";
         }
         // value needs shape conversion
-        return "MapLib.to" + keyType + "Keys(" + listType + "Shape.serialize" + listType + "ListMap(" +
-                attributeName + ", " + configurationSectionVariableName + ", \"" +
-                pascalAttributeName + "\"));";
+        String camel = NamingConventions.toCamelCase(listType);
+        return listType + "Shape.serialize" + listType + "ListMap(" +
+                "MapLib." + camel + "toStringKeys(" + attributeName + "), " +
+                configurationSectionVariableName + ", \"" + pascalAttributeName + "\");";
+//        return "MapLib.to" + keyType + "Keys(" + listType + "Shape.serialize" + listType + "ListMap(" +
+//                attributeName + ", " + configurationSectionVariableName + ", \"" +
+//                pascalAttributeName + "\"));";
     }
 }
