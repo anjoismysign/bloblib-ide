@@ -15,8 +15,9 @@ public class Iterables {
      */
     public static boolean isQuickIterable(String dataType) {
         return dataType.equals("Integer") || dataType.equals("Double") || dataType.equals("Float") ||
-                dataType.equals("Long") || dataType.equals("Short") || dataType.equals("Byte") || dataType.equals("Boolean") ||
-                dataType.equals("Character") || dataType.equals("String");
+                dataType.equals("Long") || dataType.equals("Short") || dataType.equals("Byte") ||
+                dataType.equals("Boolean") || dataType.equals("Character") ||
+                dataType.equals("String");
     }
 
     /**
@@ -56,11 +57,14 @@ public class Iterables {
                 dataType.equals("Character") || dataType.equals("BigInteger") || dataType.equals("BigDecimal");
     }
 
-    public static String primitivesGetMethods(ObjectAttribute attribute,
+    public static String primitivesGetMethods(ObjectAttribute attribute, String configurationSectionVariableName) {
+        return primitivesGetMethods(attribute.getDataType(), attribute.getAttributeName(), configurationSectionVariableName);
+    }
+
+    public static String primitivesGetMethods(String dataType, String attributeName,
                                               String configurationSectionVariableName) {
-        String dataType = attribute.getDataType();
         dataType = DataTypeLib.findPrimitiveWrapper(dataType);
-        String pascalAttributeName = NamingConventions.toPascalCase(attribute.getAttributeName());
+        String pascalAttributeName = NamingConventions.toPascalCase(attributeName);
         switch (dataType) {
             case "Byte": {
                 return "(byte) " + configurationSectionVariableName + ".getInt(\"" + pascalAttributeName + "\");";

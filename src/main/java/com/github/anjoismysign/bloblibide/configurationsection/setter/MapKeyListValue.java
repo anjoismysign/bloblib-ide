@@ -12,9 +12,12 @@ public class MapKeyListValue {
             return "null; //TODO '" + dataType + "' is not supported. Implement it yourself.";
         if (!keyAllowed.needsShapeConversion()) {
             // key does not need shape conversion
-            return MapCustomKeyListValue.apply(dataType, configurationSectionVariableName,
+            // since it's a Map, we use ConfigurationSectionLib methods
+            return MapCustomKeyListValue.apply(configurationSectionVariableName,
                     pascalAttributeName, attributeName, keyAllowed, valueAllowed);
         }
         // key needs shape conversion
+        return MapShapeKeyListValue.apply(configurationSectionVariableName,
+                pascalAttributeName, attributeName, keyAllowed, valueAllowed);
     }
 }

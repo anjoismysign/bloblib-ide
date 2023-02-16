@@ -13,10 +13,10 @@ public class ConfigurationSectionLib {
         String dataType = attribute.getDataType();
         String attributeName = attribute.getAttributeName();
         String pascalAttributeName = NamingConventions.toPascalCase(attributeName);
-        if (isQuickIterable(dataType)) {
+        if (Iterables.isQuickIterable(dataType)) {
             return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + attributeName + ");";
         }
-        if (isCustomQuickIterable(dataType)) {
+        if (Iterables.isCustomQuickIterable(dataType)) {
             String serialized = "SerializationLib.serialize(\"" + attributeName + "\")";
             return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " + serialized + ");";
         }
@@ -81,21 +81,21 @@ public class ConfigurationSectionLib {
                 String[] split = dataType.split(",");
                 String key = split[0].trim();
                 String value = split[1].trim();
-                if (!isQuickIterable(value) && !isCustomQuickIterable(value)) {
+                if (!Iterables.isQuickIterable(value) && !Iterables.isCustomQuickIterable(value)) {
                     return Optional.empty();
                 }
-                if (!isQuickIterable(key) && !isCustomQuickIterable(key)) {
+                if (!Iterables.isQuickIterable(key) && !Iterables.isCustomQuickIterable(key)) {
                     return Optional.empty();
                 }
                 return Optional.of(key + "Map");
             }
-            if (!hasQuickObjectSupport(dataType))
+            if (!Iterables.hasQuickObjectSupport(dataType))
                 return Optional.empty();
             return Optional.of(dataType);
         }
         dataType = dataType.replace(">", "");
         dataType = dataType.replace("List<", "");
-        if (!isQuickIterable(dataType) && !isCustomQuickIterable(dataType)) {
+        if (!Iterables.isQuickIterable(dataType) && !Iterables.isCustomQuickIterable(dataType)) {
             return Optional.empty();
         }
         return Optional.of(dataType + "List");
@@ -115,7 +115,7 @@ public class ConfigurationSectionLib {
         Optional<String> parse = parseType(attribute);
         String dataType = attribute.getDataType();
         if (parse.isEmpty()) {
-            if (isPrimitiveOrWrapper(dataType)) {
+            if (Iterables.isPrimitiveOrWrapper(dataType)) {
                 function.append("    ").append(dataType).append(" ")
                         .append(attribute.getAttributeName())
                         .append(" = ").append(Iterables.primitivesGetMethods(attribute,
@@ -130,7 +130,8 @@ public class ConfigurationSectionLib {
         if (dataType.startsWith("List")) {
             dataType = dataType.replace("List<", "");
             dataType = dataType.replace(">", "");
-            if (isCustomQuickIterable(dataType)) {
+            if (Iterables.isCustomQuickIterable(dataType)) {
+                //for non primitives
                 function.append("    ").append(attribute.getDataType()).append(" ")
                         .append(attribute.getAttributeName()).append(" = ConfigurationSectionLib.deserialize")
                         .append(dataType).append("List(").append(configurationSectionVariableName)
