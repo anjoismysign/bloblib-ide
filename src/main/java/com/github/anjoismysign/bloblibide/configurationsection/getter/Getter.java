@@ -1,8 +1,6 @@
 package com.github.anjoismysign.bloblibide.configurationsection.getter;
 
 import com.github.anjoismysign.bloblibide.configurationsection.Iterables;
-import com.github.anjoismysign.bloblibide.configurationsection.setter.ListSetter;
-import com.github.anjoismysign.bloblibide.configurationsection.setter.MapSetter;
 import com.github.anjoismysign.bloblibide.entities.ObjectAttribute;
 import com.github.anjoismysign.bloblibide.libraries.NamingConventions;
 
@@ -26,11 +24,11 @@ public class Getter {
                     pascalAttributeName, attributeName);
         }
         if (dataType.startsWith("Map<")) {
-            return MapSetter.apply(dataType, configurationSectionVariableName,
+            return MapGetter.apply(dataType, configurationSectionVariableName,
                     pascalAttributeName, attributeName);
         }
         if (dataType.startsWith("List<")) {
-            return ListSetter.apply(dataType, configurationSectionVariableName,
+            return ListGetter.apply(dataType, configurationSectionVariableName,
                     pascalAttributeName, attributeName);
         }
         //it's shape

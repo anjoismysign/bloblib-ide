@@ -13,15 +13,15 @@ public class MapShapeKeyListValueGetter {
         if (!valueAllowed.needsShapeConversion()) {
             // key needs shape conversion, but
             // value does not need shape conversion
-            return keyType + "Shape.to" + keyType + "Keys(ConfigurationSectionLib.serialize" +
+            return keyType + "Shape.to" + keyType + "Keys(ConfigurationSectionLib.deserialize" +
                     listType + "ListMap(" +
-                    attributeName + ", " + configurationSectionVariableName + ", \"" +
+                    configurationSectionVariableName + ", \"" +
                     pascalAttributeName + "\"));";
         }
         // key needs shape conversion,
         // value needs shape conversion
-        return keyType + "Shape.to" + keyType + "Keys(" + listType + "Shape.serialize" + listType + "ListMap(" +
-                attributeName + ", " + configurationSectionVariableName + ", \"" +
+        return keyType + "Shape.to" + keyType + "Keys(" + listType + "Shape.deserialize" + listType + "ListMap(" +
+                configurationSectionVariableName + ", \"" +
                 pascalAttributeName + "\"));";
     }
 }

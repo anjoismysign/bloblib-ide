@@ -1,10 +1,10 @@
-package com.github.anjoismysign.bloblibide.configurationsection.setter;
+package com.github.anjoismysign.bloblibide.configurationsection.getter;
 
 import com.github.anjoismysign.bloblibide.entities.ConfigurationSectionAllowed;
 
 import java.util.Optional;
 
-public class ListSetter {
+public class ListGetter {
 
     public static String apply(String originalDataType, String configurationSectionVariableName,
                                String pascalAttributeName, String attributeName) {
@@ -12,28 +12,25 @@ public class ListSetter {
         Optional<ConfigurationSectionAllowed> optional = ConfigurationSectionAllowed.isPrimitiveNeedsConversion(dataType);
         if (optional.isPresent()) {
             ConfigurationSectionAllowed allowed = optional.get();
-            return configurationSectionVariableName + ".set(\"" +
-                    pascalAttributeName + "\", " +
-                    attributeName + ");";
-
+            dataType = allowed.getDataType();
+            return configurationSectionVariableName + ".get" +
+                    dataType + "List(\"" +
+                    pascalAttributeName + "\");";
         }
         optional = ConfigurationSectionAllowed.isCustomNeedsConversion(dataType);
         if (optional.isPresent()) {
             ConfigurationSectionAllowed allowed = optional.get();
             dataType = allowed.getDataType();
             StringBuilder function = new StringBuilder();
-            function.append("ConfigurationSectionLib.serialize")
-                    .append(dataType).append("List(").append(attributeName)
-                    .append(", ")
-                    .append(configurationSectionVariableName)
+            function.append("ConfigurationSectionLib.deserialize")
+                    .append(dataType).append("List(").append(configurationSectionVariableName)
                     .append(", \"").append(pascalAttributeName).append("\");\n");
         }
         optional = ConfigurationSectionAllowed.isShapeNeedsConversion(dataType);
         if (optional.isPresent()) {
             ConfigurationSectionAllowed allowed = optional.get();
             dataType = allowed.getDataType();
-            return dataType + "Shape.serialize" + dataType + "List(" +
-                    attributeName + ", " +
+            return dataType + "Shape.deserialize" + dataType + "List(" +
                     configurationSectionVariableName + ", \"" +
                     pascalAttributeName + "\");";
         }

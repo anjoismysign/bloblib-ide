@@ -13,12 +13,12 @@ public class MapStringKeyedListValuedGetter {
         if (!valueAllowed.needsShapeConversion()) {
             // does not need shape conversion
             return "ConfigurationSectionLib.deserialize" + listType + "ListMap(" +
-                    attributeName + ", " + configurationSectionVariableName + ", \"" +
+                    configurationSectionVariableName + ", \"" +
                     pascalAttributeName + "\");";
         }
         // needs shape conversion
         return listType + "Shape.deserialize" + listType + "ListMap(" +
-                attributeName + ", " + configurationSectionVariableName + ", \"" +
+                configurationSectionVariableName + ", \"" +
                 pascalAttributeName + "\");";
     }
 }

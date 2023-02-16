@@ -32,7 +32,7 @@ public class Setter {
                     pascalAttributeName, attributeName);
         }
         //it's shape
-        return "SerializationLib.serialize(" +
-                configurationSectionVariableName + ".get(\"" + pascalAttributeName + "\"));";
+        return configurationSectionVariableName + ".set(\"" + pascalAttributeName + "\", " +
+                "SerializationLib.serialize(" + attributeName + "));";
     }
 }

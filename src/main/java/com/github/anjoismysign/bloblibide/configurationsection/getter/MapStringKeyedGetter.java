@@ -21,12 +21,12 @@ public class MapStringKeyedGetter {
         if (!allowed.needsShapeConversion()) {
             // does not need shape conversion
             return "ConfigurationSectionLib.deserialize" + valueDataType + "Map(" +
-                    attributeName + ", " + configurationSectionVariableName + ", \"" +
+                    configurationSectionVariableName + ", \"" +
                     pascalAttributeName + "\");";
         }
         // does need custom conversion
         return valueDataType + "Shape.deserialize" + valueDataType + "Map(" +
-                attributeName + ", " + configurationSectionVariableName + ", \"" +
+                configurationSectionVariableName + ", \"" +
                 pascalAttributeName + "\");";
     }
 }
