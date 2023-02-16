@@ -33,7 +33,6 @@ public class MapKeyValue {
     private static String noShapeConversion(String dataType, String configurationSectionVariableName,
                                             String pascalAttributeName, String attributeName,
                                             ConfigurationSectionAllowed keyAllowed, String value) {
-        //todo: revisar si value tiene shape conversion
         ConfigurationSectionAllowed valueAllowed = ConfigurationSectionAllowed.fromName(value);
         if (valueAllowed == null)
             return "null; //TODO '" + dataType + "' is not supported. Implement it yourself.";
@@ -59,7 +58,6 @@ public class MapKeyValue {
     private static String shapeConversion(String dataType, String configurationSectionVariableName,
                                           String pascalAttributeName, String attributeName,
                                           ConfigurationSectionAllowed keyAllowed, String value) {
-        //todo: revisar si value tiene shape conversion
         ConfigurationSectionAllowed valueAllowed = ConfigurationSectionAllowed.fromName(value);
         if (valueAllowed == null)
             return "null; //TODO '" + dataType + "' is not supported. Implement it yourself.";
