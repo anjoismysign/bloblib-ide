@@ -1,112 +1,109 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Creator: CorelDRAW X5 -->
-<svg
-    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns="http://www.w3.org/2000/svg"
-    xmlns:cc="http://web.resource.org/cc/"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
-    xmlns:dc="http://purl.org/dc/elements/1.1/"
-    xmlns:svg="http://www.w3.org/2000/svg"
-    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-    xmlns:ns1="http://sozi.baierouge.fr"
-    style="fill-rule:evenodd;text-rendering:geometricPrecision;image-rendering:optimizeQuality;clip-rule:evenodd;shape-rendering:geometricPrecision"
-    xml:space="preserve"
-    viewBox="0 0 30.6367 35.3553"
-  >
- <defs
-    >
-  <style
-        type="text/css"
-      >
-    .str0 {stroke:#2B2A29;stroke-width:0.197053}
-    .fil0 {fill:#2B2A29}
-  </style
-    >
- </defs
-  >
- <g
-      id="Layer_x0020_1"
-    >
-  <path
-        class="fil0 str0"
-        d="m16.349 15.888l11.12-6.4066-11.12-6.4148v12.821zm0 16.4l11.095-6.3816-11.095-6.415v12.796zm-13.764-8.467l10.628-6.1145-10.628-6.148v12.263zm11.712-4.3878l-11.153 6.4399 11.153 6.44v-12.88zm0-16.367l-11.186 6.4399 11.186 6.4734v-12.913zm13.756 8.4336l-10.769 6.2064 10.769 6.2064v-12.413zm-27.954 14.957v-17.56l15.224-8.784 15.216 8.784v17.56l-15.216 8.784-15.224-8.784z"
-    />
- </g
-  >
-<metadata
-    ><rdf:RDF
-      ><cc:Work
-        ><dc:format
-          >image/svg+xml</dc:format
-        ><dc:type
-            rdf:resource="http://purl.org/dc/dcmitype/StillImage"
-        /><cc:license
-            rdf:resource="http://creativecommons.org/licenses/publicdomain/"
-        /><dc:publisher
-          ><cc:Agent
-              rdf:about="http://openclipart.org/"
-            ><dc:title
-              >Openclipart</dc:title
-            ></cc:Agent
-          ></dc:publisher
-        ><dc:title
-          >Hexahedron</dc:title
-        ><dc:date
-          >2011-04-20T06:56:58</dc:date
-        ><dc:description
-          >Six triangles with apices converging to Central Point (6+1=7), symbol of universal creation and perfect cube forming itself within (and from) an infinite circle. More info: http://www.philaletheians.co.uk/Study%20notes/Theosophy%20and%20Theosophists/Keys%20to%20the%20Mystery%20Language.pdf</dc:description
-        ><dc:source
-          >https://openclipart.org/detail/133249/-by-alkon</dc:source
-        ><dc:creator
-          ><cc:Agent
-            ><dc:title
-              >alkon</dc:title
-            ></cc:Agent
-          ></dc:creator
-        ><dc:subject
-          ><rdf:Bag
-            ><rdf:li
-              >Central Point</rdf:li
-            ><rdf:li
-              >Divine</rdf:li
-            ><rdf:li
-              >Emblem</rdf:li
-            ><rdf:li
-              >Esoteric</rdf:li
-            ><rdf:li
-              >Hieroglyph</rdf:li
-            ><rdf:li
-              >Ideograph</rdf:li
-            ><rdf:li
-              >Metaphysical</rdf:li
-            ><rdf:li
-              >Occult</rdf:li
-            ><rdf:li
-              >Pagan</rdf:li
-            ><rdf:li
-              >Sacred</rdf:li
-            ><rdf:li
-              >Spiritual</rdf:li
-            ><rdf:li
-              >Symbol</rdf:li
-            ><rdf:li
-              >Theosophical</rdf:li
-            ><rdf:li
-              >Triangles</rdf:li
-            ></rdf:Bag
-          ></dc:subject
-        ></cc:Work
-      ><cc:License
-          rdf:about="http://creativecommons.org/licenses/publicdomain/"
-        ><cc:permits
-            rdf:resource="http://creativecommons.org/ns#Reproduction"
-        /><cc:permits
-            rdf:resource="http://creativecommons.org/ns#Distribution"
-        /><cc:permits
-            rdf:resource="http://creativecommons.org/ns#DerivativeWorks"
-        /></cc:License
-      ></rdf:RDF
-    ></metadata
-  ></svg
->
+<?xml version="1.0" encoding="UTF-8" ?>
+<svg version="1.1" width="16" height="16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+<rect x="10" y="1" width="1" height="1" fill="#616870" />
+<rect x="11" y="1" width="1" height="1" fill="#60686F" />
+<rect x="12" y="1" width="1" height="1" fill="#3C3D42" />
+<rect x="13" y="1" width="1" height="1" fill="#3D3F3F" />
+<rect x="14" y="1" width="1" height="1" fill="#454739" />
+<rect x="9" y="2" width="1" height="1" fill="#5F656A" />
+<rect x="10" y="2" width="1" height="1" fill="#DCDFDF" />
+<rect x="11" y="2" width="1" height="1" fill="#B5C0C1" />
+<rect x="12" y="2" width="1" height="1" fill="#767A81" />
+<rect x="13" y="2" width="1" height="1" fill="#727983" />
+<rect x="14" y="2" width="1" height="1" fill="#121C1D" />
+<rect x="8" y="3" width="1" height="1" fill="#414243" />
+<rect x="9" y="3" width="1" height="1" fill="#9FA5A8" />
+<rect x="10" y="3" width="1" height="1" fill="#DCDDDC" />
+<rect x="11" y="3" width="1" height="1" fill="#B2BFC0" />
+<rect x="12" y="3" width="1" height="1" fill="#747B81" />
+<rect x="13" y="3" width="1" height="1" fill="#202223" />
+<rect x="14" y="3" width="1" height="1" fill="#161716" />
+<rect x="7" y="4" width="1" height="1" fill="#4F5255" />
+<rect x="8" y="4" width="1" height="1" fill="#8E999D" />
+<rect x="9" y="4" width="1" height="1" fill="#BEC4C5" />
+<rect x="10" y="4" width="1" height="1" fill="#778089" />
+<rect x="11" y="4" width="1" height="1" fill="#747D87" />
+<rect x="12" y="4" width="1" height="1" fill="#51575A" />
+<rect x="13" y="4" width="1" height="1" fill="#232525" />
+<rect x="14" y="4" width="1" height="1" fill="#141411" />
+<rect x="6" y="5" width="1" height="1" fill="#3E4042" />
+<rect x="7" y="5" width="1" height="1" fill="#929A9F" />
+<rect x="8" y="5" width="1" height="1" fill="#BDC5C4" />
+<rect x="9" y="5" width="1" height="1" fill="#737B85" />
+<rect x="10" y="5" width="1" height="1" fill="#6F7A84" />
+<rect x="11" y="5" width="1" height="1" fill="#262729" />
+<rect x="12" y="5" width="1" height="1" fill="#26282A" />
+<rect x="13" y="5" width="1" height="1" fill="#4E4948" />
+<rect x="14" y="5" width="1" height="1" fill="#151515" />
+<rect x="5" y="6" width="1" height="1" fill="#3F4143" />
+<rect x="6" y="6" width="1" height="1" fill="#7D858C" />
+<rect x="7" y="6" width="1" height="1" fill="#BCC4C5" />
+<rect x="8" y="6" width="1" height="1" fill="#606970" />
+<rect x="9" y="6" width="1" height="1" fill="#646D77" />
+<rect x="10" y="6" width="1" height="1" fill="#27272B" />
+<rect x="11" y="6" width="1" height="1" fill="#272829" />
+<rect x="12" y="6" width="1" height="1" fill="#504A49" />
+<rect x="13" y="6" width="1" height="1" fill="#141515" />
+<rect x="4" y="7" width="1" height="1" fill="#3A3B3D" />
+<rect x="5" y="7" width="1" height="1" fill="#7F878E" />
+<rect x="6" y="7" width="1" height="1" fill="#BDC2C4" />
+<rect x="7" y="7" width="1" height="1" fill="#626767" />
+<rect x="8" y="7" width="1" height="1" fill="#58636B" />
+<rect x="9" y="7" width="1" height="1" fill="#3C4044" />
+<rect x="10" y="7" width="1" height="1" fill="#252727" />
+<rect x="11" y="7" width="1" height="1" fill="#4D4B49" />
+<rect x="12" y="7" width="1" height="1" fill="#141516" />
+<rect x="3" y="8" width="1" height="1" fill="#484A4C" />
+<rect x="4" y="8" width="1" height="1" fill="#7B8389" />
+<rect x="5" y="8" width="1" height="1" fill="#C4CBCB" />
+<rect x="6" y="8" width="1" height="1" fill="#787F86" />
+<rect x="7" y="8" width="1" height="1" fill="#586067" />
+<rect x="8" y="8" width="1" height="1" fill="#576066" />
+<rect x="9" y="8" width="1" height="1" fill="#2B2B2C" />
+<rect x="10" y="8" width="1" height="1" fill="#4F4F4A" />
+<rect x="11" y="8" width="1" height="1" fill="#141516" />
+<rect x="2" y="9" width="1" height="1" fill="#3B3E42" />
+<rect x="3" y="9" width="1" height="1" fill="#7B8389" />
+<rect x="4" y="9" width="1" height="1" fill="#BABFBE" />
+<rect x="5" y="9" width="1" height="1" fill="#656B73" />
+<rect x="6" y="9" width="1" height="1" fill="#606972" />
+<rect x="7" y="9" width="1" height="1" fill="#586067" />
+<rect x="8" y="9" width="1" height="1" fill="#2A2C2B" />
+<rect x="9" y="9" width="1" height="1" fill="#4F4D4C" />
+<rect x="10" y="9" width="1" height="1" fill="#151516" />
+<rect x="1" y="10" width="1" height="1" fill="#3C3D3F" />
+<rect x="2" y="10" width="1" height="1" fill="#FCC6A2" />
+<rect x="3" y="10" width="1" height="1" fill="#FED2A5" />
+<rect x="4" y="10" width="1" height="1" fill="#FED1A3" />
+<rect x="5" y="10" width="1" height="1" fill="#636B74" />
+<rect x="6" y="10" width="1" height="1" fill="#5D656E" />
+<rect x="7" y="10" width="1" height="1" fill="#272929" />
+<rect x="8" y="10" width="1" height="1" fill="#50504D" />
+<rect x="9" y="10" width="1" height="1" fill="#141515" />
+<rect x="1" y="11" width="1" height="1" fill="#37393C" />
+<rect x="2" y="11" width="1" height="1" fill="#FFD7A6" />
+<rect x="3" y="11" width="1" height="1" fill="#FFD5A8" />
+<rect x="4" y="11" width="1" height="1" fill="#FED4A9" />
+<rect x="5" y="11" width="1" height="1" fill="#FDDBAC" />
+<rect x="6" y="11" width="1" height="1" fill="#373A3F" />
+<rect x="7" y="11" width="1" height="1" fill="#4F4E4B" />
+<rect x="8" y="11" width="1" height="1" fill="#151516" />
+<rect x="1" y="12" width="1" height="1" fill="#2C2C30" />
+<rect x="2" y="12" width="1" height="1" fill="#676A5D" />
+<rect x="3" y="12" width="1" height="1" fill="#666C65" />
+<rect x="4" y="12" width="1" height="1" fill="#E99E77" />
+<rect x="5" y="12" width="1" height="1" fill="#ECA778" />
+<rect x="6" y="12" width="1" height="1" fill="#B45C44" />
+<rect x="7" y="12" width="1" height="1" fill="#151415" />
+<rect x="1" y="13" width="1" height="1" fill="#303231" />
+<rect x="2" y="13" width="1" height="1" fill="#4E5250" />
+<rect x="3" y="13" width="1" height="1" fill="#272725" />
+<rect x="4" y="13" width="1" height="1" fill="#BF634F" />
+<rect x="5" y="13" width="1" height="1" fill="#B7664E" />
+<rect x="6" y="13" width="1" height="1" fill="#141514" />
+<rect x="1" y="14" width="1" height="1" fill="#141517" />
+<rect x="2" y="14" width="1" height="1" fill="#161618" />
+<rect x="3" y="14" width="1" height="1" fill="#161617" />
+<rect x="4" y="14" width="1" height="1" fill="#161616" />
+<rect x="5" y="14" width="1" height="1" fill="#171616" />
+</svg>
