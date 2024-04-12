@@ -29,18 +29,6 @@
                     id="BlobLibIDE.Actions.SetupProjectAction" text="Setup Project (BlobPlugin and Director Package)"
                     icon="com.github.anjoismysign.bloblibide.MyIcons.BLOBLIB"/>
         </group>
-        <group id="BlobLibIDE.BlobPlugin" text="BlobLib" description="Handle BlobLib related stuff">
-            <add-to-group group-id="NewGroup" anchor="first"/>
-            <action class="com.github.anjoismysign.bloblibide.actions.BlobPluginAction"
-                    id="BlobLibIDE.Actions.BlobPluginAction" text="BlobPlugin"
-                    icon="com.github.anjoismysign.bloblibide.MyIcons.BLOBLIB"/>
-        </group>
-        <group id="BlobLibIDE.ManagerPackageSetup" text="BlobLib" description="Handle BlobLib related stuff">
-            <add-to-group group-id="NewGroup" anchor="first"/>
-            <action class="com.github.anjoismysign.bloblibide.actions.ManagerPackageSetupAction"
-                    id="BlobLibIDE.Actions.ManagerPackageSetupAction" text="Setup Director Package"
-                    icon="com.github.anjoismysign.bloblibide.MyIcons.BLOBLIB"/>
-        </group>
         <group id="BlobLibIDE.BlobObject" text="BlobLib" description="Handle BlobLib related stuff">
             <add-to-group group-id="NewGroup" anchor="first"/>
             <action class="com.github.anjoismysign.bloblibide.actions.BlobObjectAction"

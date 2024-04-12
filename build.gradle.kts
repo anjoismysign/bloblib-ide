@@ -23,6 +23,10 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    implementation(files("libs/HahaSwing-1.0.2.jar"))
+}
+
 // Set the JVM language level used to build the project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
 kotlin {
     jvmToolchain(17)

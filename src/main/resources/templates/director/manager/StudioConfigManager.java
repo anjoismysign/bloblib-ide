@@ -5,10 +5,10 @@ import us.mytheria.bloblib.entities.ConfigDecorator;
 import us.mytheria.blobstudio.director.StudioManager;
 import us.mytheria.blobstudio.director.StudioManagerDirector;
 
-public class ConfigManager extends StudioManager {
+public class StudioConfigManager extends StudioManager {
     private boolean tinyDebug;
 
-    public ConfigManager(StudioManagerDirector managerDirector) {
+    public StudioConfigManager(StudioManagerDirector managerDirector) {
         super(managerDirector);
         reload();
     }

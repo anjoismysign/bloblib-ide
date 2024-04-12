@@ -1,5 +1,6 @@
 package us.mytheria.blobstudio;
 
+import us.mytheria.bloblib.managers.BlobPlugin;
 import us.mytheria.bloblib.managers.IManagerDirector;
 import us.mytheria.blobstudio.director.StudioManagerDirector;
 

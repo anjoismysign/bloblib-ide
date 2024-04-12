@@ -11,7 +11,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.Optional;
@@ -46,7 +45,7 @@ public class BlobPluginAction extends AnAction {
         final String namingCode = codeInput.thanks();
         String currentPackage = PsiDirectoryLib.getPackageNameOrEmpty(psiDirectory);
         String content;
-        try (InputStream inputStream = this.getClass().getResourceAsStream("/templates/BlobPlugin.java")){
+        try (InputStream inputStream = this.getClass().getResourceAsStream("/templates/BlobStudio.java")){
             content = FileContentReplacer.getContent(Objects.requireNonNull(inputStream));
             content = content.replace("us.mytheria.blobstudio", currentPackage);
             content = content.replace("Studio", namingCode);

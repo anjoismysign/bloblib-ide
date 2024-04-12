@@ -3,14 +3,14 @@ package us.mytheria.blobstudio.director;
 import org.jetbrains.annotations.NotNull;
 import us.mytheria.bloblib.entities.GenericManagerDirector;
 import us.mytheria.blobstudio.BlobStudio;
-import us.mytheria.blobstudio.director.manager.ConfigManager;
+import us.mytheria.blobstudio.director.manager.StudioConfigManager;
 
-public class ManagerDirector extends GenericManagerDirector<BlobStudio> {
+public class StudioManagerDirector extends GenericManagerDirector<BlobStudio> {
 
-    public ManagerDirector(BlobStudio plugin) {
+    public StudioManagerDirector(BlobStudio plugin) {
         super(plugin);
         addManager("ConfigManager",
-                new ConfigManager(this));
+                new StudioConfigManager(this));
     }
 
     /**
@@ -26,7 +26,7 @@ public class ManagerDirector extends GenericManagerDirector<BlobStudio> {
     }
 
     @NotNull
-    public final ConfigManager getConfigManager() {
-        return getManager("ConfigManager", ConfigManager.class);
+    public final StudioConfigManager getConfigManager() {
+        return getManager("ConfigManager", StudioConfigManager.class);
     }
 }
